@@ -200,7 +200,7 @@ export default function Home() {
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex flex-wrap gap-2">
                         {failedWordsList.map(stat => {
-                            const isCompleted = stat.stage === 'completed';
+                            const isCompleted = stat.successCount >= 2;
                             return (
                               <span 
                                   key={stat.pair.correct}
