@@ -112,11 +112,14 @@ export function selectAnswer(state: GameState, answer: string): GameState {
   }
   
   const isCorrect = answer === state.currentPair.correct;
-  const newCorrectAnswers = state.correctAnswers + (isCorrect ? 1 : 0);
   
-  let updatedState = { ...state };
-  updatedState.selectedAnswer = answer;
-  updatedState.totalAnswers = state.totalAnswers + 1;
+  let updatedState: GameState = { 
+    ...state,
+    selectedAnswer: answer,
+    totalAnswers: state.totalAnswers + 1,
+    correctAnswers: state.correctAnswers + (isCorrect ? 1 : 0),
+    isAnswered: true
+  };
 
   if (isCorrect) {
     updatedState = recordCorrectWord(updatedState, state.currentPair.correct);
@@ -124,7 +127,6 @@ export function selectAnswer(state: GameState, answer: string): GameState {
     updatedState = recordFailedWord(updatedState, state.currentPair.correct, state.totalAnswers);
   }
 
-  updatedState.isAnswered = true;
   return updatedState;
 }
 
