@@ -5,26 +5,57 @@ import GameCard from './components/GameCard';
 import ScorePanel from './components/ScorePanel';
 import Instructions from './components/Instructions';
 import { JLyPair, loadPairs, shuffleArray } from './utils/pairs';
-import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame } from './utils/gameLogic';
+import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, FailedWordStat } from './utils/gameLogic';
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Custom features state
+  const [highScores, setHighScores] = useState<number[]>([]);
+  const [showFailedWordsHistory, setShowFailedWordsHistory] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
+    // Load local storage data
+    const savedScores = JSON.parse(localStorage.getItem('j_ly_high_scores') || '[]');
+    setHighScores(savedScores);
+
+    const savedFailedWordsStr = localStorage.getItem('j_ly_failed_words');
+    let savedFailedWords: Record<string, FailedWordStat> | undefined;
+    if (savedFailedWordsStr) {
+       savedFailedWords = JSON.parse(savedFailedWordsStr);
+    }
+
     loadPairs()
       .then((pairs) => {
         if (pairs.length === 0) {
           throw new Error('Nem sikerült betölteni a szópárokat.');
         }
-        setGameState(initializeGameState(pairs));
+        setGameState(initializeGameState(pairs, savedFailedWords));
         setIsLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setIsLoading(false);
       });
+  }, []);
+
+  // Sync failed words to local storage when they change
+  useEffect(() => {
+    if (gameState?.failedWords) {
+      localStorage.setItem('j_ly_failed_words', JSON.stringify(gameState.failedWords));
+    }
+  }, [gameState?.failedWords]);
+
+  const saveHighScore = useCallback((score: number) => {
+     if (score <= 0) return;
+     setHighScores(prev => {
+        const newScores = [...prev, score].sort((a,b) => b - a).slice(0, 3);
+        localStorage.setItem('j_ly_high_scores', JSON.stringify(newScores));
+        return newScores;
+     });
   }, []);
 
   const handleAnswerSelect = useCallback((answer: string) => {
@@ -37,14 +68,26 @@ export default function Home() {
     setGameState(nextQuestion(gameState));
   }, [gameState]);
 
+  // Request new game (shows confirm if score > 0)
+  const requestNewGame = useCallback(() => {
+    if (!gameState) return;
+    if (gameState.correctAnswers > 0) {
+        setShowConfirmModal(true);
+    } else {
+        handleNewGame();
+    }
+  }, [gameState]);
+
   const handleNewGame = useCallback(() => {
     if (!gameState) return;
+    saveHighScore(gameState.correctAnswers);
     setGameState(resetGame(gameState));
-  }, [gameState]);
+    setShowConfirmModal(false);
+  }, [gameState, saveHighScore]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!gameState) return;
+      if (!gameState || showConfirmModal) return;
 
       switch (event.key) {
         case '1':
@@ -65,14 +108,14 @@ export default function Home() {
           break;
         case 'n':
         case 'N':
-          handleNewGame();
+          requestNewGame();
           break;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, handleAnswerSelect, handleNextQuestion, handleNewGame]);
+  }, [gameState, handleAnswerSelect, handleNextQuestion, requestNewGame, showConfirmModal]);
 
   if (isLoading) {
     return (
@@ -102,10 +145,21 @@ export default function Home() {
     return null;
   }
 
+  const isCurrentFailedPreviously = 
+      gameState.failedWords[gameState.currentPair.correct] && 
+      !gameState.failedWords[gameState.currentPair.correct].learned;
+
+  const failedWordsList = Object.values(gameState.failedWords);
+
   return (
     <>
-      <header className="text-center mb-10">
-        <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4">
+      <header className="text-center mb-10 relative">
+        {highScores.length > 0 && (
+           <div className="absolute right-0 top-0 text-sm text-gray-500 hidden sm:block">
+               Top Scores: {highScores.join(', ')}
+           </div>
+        )}
+        <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4 mt-8 sm:mt-0">
           J vagy <span className="text-primary-600">LY</span>?
         </h1>
         <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -122,6 +176,7 @@ export default function Home() {
             correctAnswer={gameState.currentPair.correct}
             onSelect={handleAnswerSelect}
             shuffledOptions={gameState.shuffledOptions}
+            isPreviouslyFailed={Boolean(isCurrentFailedPreviously)}
           />
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -136,7 +191,7 @@ export default function Home() {
             </button>
             
             <button
-              onClick={handleNewGame}
+              onClick={requestNewGame}
               className="px-8 py-4 rounded-xl text-lg font-bold btn-secondary"
               aria-label="Új játék kezdése"
             >
@@ -144,13 +199,37 @@ export default function Home() {
               <span className="text-sm block mt-1 font-normal">(N)</span>
             </button>
           </div>
+
+          <div className="mt-8">
+            <button 
+                onClick={() => setShowFailedWordsHistory(!showFailedWordsHistory)}
+                className="text-sm text-primary-600 underline hover:text-primary-800 transition-colors bg-transparent border-none p-0 cursor-pointer"
+            >
+                {showFailedWordsHistory ? 'Elhibázott szavak elrejtése' : 'Korábban elhibázott szavak mutatása'}
+            </button>
+            
+            {showFailedWordsHistory && failedWordsList.length > 0 && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex flex-wrap gap-2">
+                        {failedWordsList.map(stat => (
+                            <span 
+                                key={stat.pair.correct}
+                                className={`px-2 py-1 text-sm rounded ${stat.learned ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}
+                            >
+                                {stat.pair.correct} {stat.learned ? '✓' : ''}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+          </div>
         </div>
         
         <div className="lg:col-span-1">
           <ScorePanel
             correct={gameState.correctAnswers}
             total={gameState.totalAnswers}
-            onNewGame={handleNewGame}
+            onNewGame={requestNewGame}
             pairCount={gameState.pairCount}
           />
           
@@ -177,6 +256,29 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl relative">
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Új játék kezdése?</h3>
+                <p className="text-gray-600 mb-6">A jelenlegi pontszámod mentésre kerül, de a játék nullázódik.</p>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={() => setShowConfirmModal(false)}
+                        className="flex-1 py-3 bg-gray-100 font-bold text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+                    >
+                        Mégse
+                    </button>
+                    <button 
+                        onClick={handleNewGame}
+                        className="flex-1 py-3 bg-error-500 font-bold text-white rounded-xl hover:bg-error-600 transition-colors"
+                    >
+                        Újraindítás
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
     </>
   );
 }

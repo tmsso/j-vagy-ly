@@ -15,9 +15,15 @@ export async function loadPairs(): Promise<JLyPair[]> {
     if (!response.ok) {
       throw new Error(`Failed to load pairs: ${response.status}`);
     }
-    const data = await response.json();
-    cachedPairs = data;
-    return data;
+    const data: JLyPair[] = await response.json();
+    
+    // Filter out words longer than 15 characters
+    const filteredData = data.filter(pair => 
+      pair.correct.length <= 15 && pair.wrong.length <= 15
+    );
+
+    cachedPairs = filteredData;
+    return filteredData;
   } catch (error) {
     console.error('Error loading j/ly pairs:', error);
     // Fallback to empty array

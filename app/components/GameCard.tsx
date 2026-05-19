@@ -9,6 +9,7 @@ interface GameCardProps {
   correctAnswer: string;
   onSelect: (answer: string) => void;
   shuffledOptions: string[];
+  isPreviouslyFailed?: boolean;
 }
 
 export default function GameCard({
@@ -18,25 +19,37 @@ export default function GameCard({
   correctAnswer,
   onSelect,
   shuffledOptions,
+  isPreviouslyFailed,
 }: GameCardProps) {
   const getButtonClass = (option: string) => {
     if (!isAnswered) {
-      return 'btn-primary w-full h-32 text-2xl';
+      return 'btn-primary w-full min-h-32 py-4 flex flex-col items-center justify-center';
     }
     
     if (option === correctAnswer) {
-      return 'btn-success w-full h-32 text-2xl cursor-default';
+      return 'btn-success w-full min-h-32 py-4 flex flex-col items-center justify-center cursor-default';
     }
     
     if (option === selectedAnswer && option !== correctAnswer) {
-      return 'btn-error w-full h-32 text-2xl cursor-default';
+      return 'btn-error w-full min-h-32 py-4 flex flex-col items-center justify-center cursor-default';
     }
     
-    return 'btn-secondary w-full h-32 text-2xl cursor-default opacity-70';
+    return 'btn-secondary w-full min-h-32 py-4 flex flex-col items-center justify-center cursor-default opacity-70';
+  };
+
+  const getFontSizeClass = (optionLength: number) => {
+    if (optionLength > 12) return 'text-xl sm:text-2xl font-bold';
+    if (optionLength > 9) return 'text-2xl sm:text-3xl font-bold';
+    return 'text-3xl sm:text-4xl font-bold';
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 animate-fade-in">
+    <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 animate-fade-in relative">
+      {isPreviouslyFailed && (
+        <div className="absolute top-0 right-0 m-4 text-xs font-bold text-yellow-600 bg-yellow-100 px-2 py-1 rounded-md border border-yellow-200">
+          ⚠️ Korábban elhibázott
+        </div>
+      )}
       <h2 className="text-3xl font-bold text-center mb-2 text-gray-800">Melyik a helyes?</h2>
       <p className="text-gray-600 text-center mb-8">Válaszd ki a helyes írásmódot!</p>
       
@@ -49,7 +62,7 @@ export default function GameCard({
             disabled={isAnswered}
             aria-label={`Választás: ${option}`}
           >
-            <span className="text-3xl font-bold">{option}</span>
+            <span className={getFontSizeClass(option.length)}>{option}</span>
             {isAnswered && option === correctAnswer && (
               <div className="text-sm mt-2 font-normal">✅ Helyes</div>
             )}
