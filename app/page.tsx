@@ -69,9 +69,50 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Suppress space scrolling
+      if (event.key === ' ' || event.key === 'Spacebar') {
+          event.preventDefault();
+      }
+
+      if (!gameState || showConfirmModal || wordToRemove) return;
+
+      switch (event.key) {
+        case '1':
+        case 'ArrowLeft':
+          if (!gameState.isAnswered && gameState.shuffledOptions[0]) {
+            handleAnswerSelect(gameState.shuffledOptions[0]);
+          }
+          break;
+        case '2':
+        case 'ArrowRight':
+          if (!gameState.isAnswered && gameState.shuffledOptions[1]) {
+            handleAnswerSelect(gameState.shuffledOptions[1]);
+          }
+          break;
+        case ' ':
+        case 'Spacebar':
+        case 'Enter':
+          if (gameState.isAnswered) {
+            handleNextQuestion();
+          }
+          break;
+        case 'n':
+        case 'N':
+          setShowConfirmModal(true);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameState, handleAnswerSelect, handleNextQuestion, showConfirmModal, wordToRemove]);
+
   if (isLoading || !gameState) return <div className="text-center mt-20">Betöltés...</div>;
 
   const failedWordsList = Object.values(gameState.failedWords);
+  const wordToRemoveData = wordToRemove ? gameState.failedWords[wordToRemove] : null;
 
   return (
     <>
@@ -129,12 +170,16 @@ export default function Home() {
 
       {wordToRemove && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-xl font-bold mb-4">Eltávolítás?</h3>
-            <p className="text-gray-600 mb-6">Biztosan jól megtanultad a(z) <strong>{wordToRemove}</strong> szót? Eltávolítható a listáról?</p>
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in duration-300">
+            <h3 className="text-xl font-bold mb-4">
+              <span className={wordToRemoveData?.stage === 'green' ? 'text-green-600' : 'text-red-500'}>
+                {wordToRemove}
+              </span> szó eltávolítása
+            </h3>
+            <p className="text-gray-600 mb-6 font-medium">Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
             <div className="flex gap-4">
-              <button onClick={() => setWordToRemove(null)} className="flex-1 py-2 bg-gray-100 rounded-lg">Mégse</button>
-              <button onClick={handleManualRemoveConfirm} className="flex-1 py-2 bg-red-500 text-white rounded-lg">Igen, eltávolítás</button>
+              <button onClick={() => setWordToRemove(null)} className="flex-1 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-bold">Mégse</button>
+              <button onClick={handleManualRemoveConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-bold">Eltávolítás</button>
             </div>
           </div>
         </div>
