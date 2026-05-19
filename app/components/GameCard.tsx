@@ -37,11 +37,14 @@ export default function GameCard({
     return 'btn-secondary w-full min-h-32 py-4 flex flex-col items-center justify-center cursor-default opacity-70';
   };
 
-  const getFontSizeClass = (optionLength: number) => {
-    if (optionLength > 12) return 'text-xl sm:text-2xl font-bold';
-    if (optionLength > 9) return 'text-2xl sm:text-3xl font-bold';
-    return 'text-3xl sm:text-4xl font-bold';
-  };
+  // Adaptive font size mapping - use the longest option length to ensure BOTH buttons use the same size
+  const maxOptionLength = Math.max(shuffledOptions[0]?.length || 0, shuffledOptions[1]?.length || 0);
+  let fontSizeClass = 'text-3xl sm:text-4xl font-bold';
+  if (maxOptionLength > 12) {
+    fontSizeClass = 'text-xl sm:text-2xl font-bold';
+  } else if (maxOptionLength > 9) {
+    fontSizeClass = 'text-2xl sm:text-3xl font-bold';
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-8 mb-8 animate-fade-in relative">
@@ -62,7 +65,7 @@ export default function GameCard({
             disabled={isAnswered}
             aria-label={`Választás: ${option}`}
           >
-            <span className={getFontSizeClass(option.length)}>{option}</span>
+            <span className={fontSizeClass}>{option}</span>
             {isAnswered && option === correctAnswer && (
               <div className="text-sm mt-2 font-normal">✅ Helyes</div>
             )}
@@ -92,6 +95,17 @@ export default function GameCard({
                 </p>
               )}
             </div>
+          </div>
+          
+          <div className="mt-4 pt-4 border-t border-blue-200">
+            <a 
+              href={`https://www.google.com/search?q=define+${correctAnswer}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center gap-1 w-fit"
+            >
+              🔍 Mit jelent? (Google keresés)
+            </a>
           </div>
         </div>
       )}

@@ -25,7 +25,7 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="text-center text-gray-600 text-sm py-4">
-          <p>J vagy LY? © 2026 • A magyar helyesírás gyakorló alkalmazása</p>
+          <p>J vagy LY? © 2026</p>
         </footer>
       </body>
     </html>

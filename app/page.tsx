@@ -12,13 +12,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Custom features state
   const [highScores, setHighScores] = useState<number[]>([]);
   const [showFailedWordsHistory, setShowFailedWordsHistory] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
-    // Load local storage data
     const savedScores = JSON.parse(localStorage.getItem('j_ly_high_scores') || '[]');
     setHighScores(savedScores);
 
@@ -42,7 +40,6 @@ export default function Home() {
       });
   }, []);
 
-  // Sync failed words to local storage when they change
   useEffect(() => {
     if (gameState?.failedWords) {
       localStorage.setItem('j_ly_failed_words', JSON.stringify(gameState.failedWords));
@@ -68,7 +65,6 @@ export default function Home() {
     setGameState(nextQuestion(gameState));
   }, [gameState]);
 
-  // Request new game (shows confirm if score > 0)
   const requestNewGame = useCallback(() => {
     if (!gameState) return;
     if (gameState.correctAnswers > 0) {
@@ -87,21 +83,29 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Suppress space scrolling
+      if (event.key === ' ' || event.key === 'Spacebar') {
+          event.preventDefault();
+      }
+
       if (!gameState || showConfirmModal) return;
 
       switch (event.key) {
         case '1':
+        case 'ArrowLeft':
           if (!gameState.isAnswered && gameState.shuffledOptions[0]) {
             handleAnswerSelect(gameState.shuffledOptions[0]);
           }
           break;
         case '2':
+        case 'ArrowRight':
           if (!gameState.isAnswered && gameState.shuffledOptions[1]) {
             handleAnswerSelect(gameState.shuffledOptions[1]);
           }
           break;
         case ' ':
         case 'Spacebar':
+        case 'Enter':
           if (gameState.isAnswered) {
             handleNextQuestion();
           }
@@ -145,10 +149,6 @@ export default function Home() {
     return null;
   }
 
-  const isCurrentFailedPreviously = 
-      gameState.failedWords[gameState.currentPair.correct] && 
-      !gameState.failedWords[gameState.currentPair.correct].learned;
-
   const failedWordsList = Object.values(gameState.failedWords);
 
   return (
@@ -162,9 +162,6 @@ export default function Home() {
         <h1 className="text-5xl md:text-6xl font-bold text-gray-800 mb-4 mt-8 sm:mt-0">
           J vagy <span className="text-primary-600">LY</span>?
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Gyakorold a magyar helyesírást! Válaszd ki a helyes írásmódot a két lehetőség közül.
-        </p>
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -176,7 +173,7 @@ export default function Home() {
             correctAnswer={gameState.currentPair.correct}
             onSelect={handleAnswerSelect}
             shuffledOptions={gameState.shuffledOptions}
-            isPreviouslyFailed={Boolean(isCurrentFailedPreviously)}
+            isPreviouslyFailed={gameState.isCurrentFromBacklog}
           />
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -187,16 +184,7 @@ export default function Home() {
               aria-label="Következő szó"
             >
               Következő szó
-              <span className="text-sm block mt-1 font-normal">(Space)</span>
-            </button>
-            
-            <button
-              onClick={requestNewGame}
-              className="px-8 py-4 rounded-xl text-lg font-bold btn-secondary"
-              aria-label="Új játék kezdése"
-            >
-              Új játék
-              <span className="text-sm block mt-1 font-normal">(N)</span>
+              <span className="text-sm block mt-1 font-normal">(Enter)</span>
             </button>
           </div>
 
@@ -211,14 +199,17 @@ export default function Home() {
             {showFailedWordsHistory && failedWordsList.length > 0 && (
                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex flex-wrap gap-2">
-                        {failedWordsList.map(stat => (
-                            <span 
-                                key={stat.pair.correct}
-                                className={`px-2 py-1 text-sm rounded ${stat.learned ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}
-                            >
-                                {stat.pair.correct} {stat.learned ? '✓' : ''}
-                            </span>
-                        ))}
+                        {failedWordsList.map(stat => {
+                            const isCompleted = stat.stage === 'completed';
+                            return (
+                              <span 
+                                  key={stat.pair.correct}
+                                  className={`px-2 py-1 text-sm rounded ${isCompleted ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'}`}
+                              >
+                                  {stat.pair.correct} {isCompleted ? '✓' : ''}
+                              </span>
+                            );
+                        })}
                     </div>
                 </div>
             )}
@@ -238,10 +229,6 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h3 className="text-xl font-bold text-gray-800 mb-4">Statisztika</h3>
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700">Elérhető feladatok:</span>
-                <span className="font-bold text-primary-600">{gameState.pairCount.toLocaleString()}</span>
-              </div>
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">Játékban töltött idő:</span>
                 <span className="font-bold text-gray-800">
