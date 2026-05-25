@@ -44,7 +44,9 @@ export default function GameCard({
   // Adaptive font size mapping - use the longest option length to ensure BOTH buttons use the same size
   const maxOptionLength = Math.max(shuffledOptions[0]?.length || 0, shuffledOptions[1]?.length || 0);
   let fontSizeClass = 'text-3xl sm:text-4xl font-bold';
-  if (maxOptionLength > 12) {
+  if (maxOptionLength >= 15) {
+    fontSizeClass = 'text-lg sm:text-xl font-bold';
+  } else if (maxOptionLength > 12) {
     fontSizeClass = 'text-xl sm:text-2xl font-bold';
   } else if (maxOptionLength > 9) {
     fontSizeClass = 'text-2xl sm:text-3xl font-bold';

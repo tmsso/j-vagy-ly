@@ -122,7 +122,7 @@ export function nextQuestion(state: GameState): GameState {
       // Weighted selection: "green" words are 50% less likely
       const weightedList: FailedWordStat[] = [];
       activeStats.forEach(s => {
-        const weight = s.stage === 'green' ? 1 : 2;
+        const weight = s.stage === 'green' ? 50 : 100;
         for(let i=0; i<weight; i++) weightedList.push(s);
       });
       newPair = weightedList[Math.floor(Math.random() * weightedList.length)].pair;

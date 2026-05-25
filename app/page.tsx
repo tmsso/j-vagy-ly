@@ -52,6 +52,21 @@ export default function Home() {
     }
   }, [gameState?.failedWords, gameState?.justMastered]);
 
+  useEffect(() => {
+    if (gameState && (gameState.totalAnswers > 0 || Object.keys(gameState.failedWords).length > 0)) {
+       const currentScore = gameState.correctAnswers;
+       setHighScores(prev => {
+         const newScores = [...prev, currentScore].sort((a, b) => b - a);
+         const uniqueScores = Array.from(new Set(newScores)).slice(0, 3);
+         if (JSON.stringify(uniqueScores) !== JSON.stringify(prev)) {
+           localStorage.setItem('j_ly_high_scores', JSON.stringify(uniqueScores));
+           return uniqueScores;
+         }
+         return prev;
+       });
+    }
+  }, [gameState?.correctAnswers, gameState?.totalAnswers]);
+
   const handleAnswerSelect = useCallback((answer: string) => {
     if (!gameState || gameState.isAnswered) return;
     setGameState(selectAnswer(gameState, answer));
@@ -163,6 +178,21 @@ export default function Home() {
         </div>
         
         <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h3 className="text-xl font-bold mb-4 text-gray-800">Top 3 Legjobb Pontszám</h3>
+            {highScores.length > 0 ? (
+              <ol className="space-y-2">
+                {highScores.map((score, idx) => (
+                  <li key={idx} className="flex justify-between items-center text-lg">
+                    <span className="text-gray-500 font-medium">{idx + 1}.</span>
+                    <span className="font-bold text-primary-600">{score} pont</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p className="text-gray-500 italic">Még nincs rögzített pontszám.</p>
+            )}
+          </div>
           <ScorePanel correct={gameState.correctAnswers} total={gameState.totalAnswers} onNewGame={() => setShowConfirmModal(true)} pairCount={gameState.pairCount} />
           <Instructions />
         </div>
