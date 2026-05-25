@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import styles from './page.module.css'; // Assuming you have this CSS module
@@ -7,7 +9,7 @@ const NEW_GAME_CONFIRMATION_STORAGE_KEY = "jly_confirm_new_game";
 const HIGH_SCORES_STORAGE_KEY = "jly_high_scores";
 const FAILED_WORDS_STORAGE_KEY = "jly_failed_words";
 const FAILED_WORD_PROBABILITY_MULTIPLIER = 100;
-const FAILED_WORD_REAPPEAR_DELAY = 5;
+const FAILED_WORD_REAPPEAR_DELAY = 5; // The number of words to appear after failing before reappearing
 
 export default function Home() {
   const [availableWords, setAvailableWords] = useState([]);
@@ -39,70 +41,95 @@ export default function Home() {
     }
   };
 
-  // --- Game Logic ---
+  // --- Game Initialization ---
   useEffect(() => {
-    // Load initial data
     const loadGameData = async () => {
-      const response = await fetch('/jly-pairs.json');
-      const data = await response.json();
-      // Filter words longer than MAX_WORD_LENGTH initially
-      setAvailableWords(data.filter(item => item.correct.length <= MAX_WORD_LENGTH).map(item => item.correct));
-      
-      // Load high scores and failed words
-      setHighScores(getFromLocalStorage(HIGH_SCORES_STORAGE_KEY, []));
-      setFailedWords(getFromLocalStorage(FAILED_WORDS_STORAGE_KEY, []));
+      try {
+        const response = await fetch('/jly-pairs.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Filter words and store them
+        const initialWords = data
+          .filter(item => item.correct.length <= MAX_WORD_LENGTH)
+          .map(item => item.correct);
+        setAvailableWords(initialWords);
+        
+        // Load high scores and failed words
+        setHighScores(getFromLocalStorage(HIGH_SCORES_STORAGE_KEY, []));
+        setFailedWords(getFromLocalStorage(FAILED_WORDS_STORAGE_KEY, []));
+      } catch (error) {
+        console.error("Failed to load game data:", error);
+        // Handle error, perhaps display a message to the user
+      }
     };
     loadGameData();
   }, []);
 
+  // --- Word Selection Logic ---
   const selectNextWord = () => {
-    let wordPool = [...availableWords];
+    let wordPool = [...availableWords]; // Use current list of available words
+    let wordToReturn = null;
+    let attempts = 0;
 
-    // Adjust probability for failed words
-    const wordsToConsider = [];
+    // Augment pool with failed words based on probability
+    const weightedPool = [];
     for (const word of wordPool) {
         const failedWordEntry = failedWords.find(fw => fw.word === word);
         if (failedWordEntry) {
-            const wordsSinceFailure = (currentWord ? availableWords.indexOf(currentWord) : 0) - availableWords.indexOf(word); // This is a crude approximation, needs better tracking
-            if (wordsSinceFailure >= FAILED_WORD_REAPPEAR_DELAY) {
-                for (let i = 0; i < FAILED_WORD_PROBABILITY_MULTIPLIER; i++) {
-                    wordsToConsider.push({ word, priority: 'failed' });
-                }
-            } else {
-                wordsToConsider.push({ word, priority: 'normal' });
+            // Crude approximation of words since failure: count words in the original list
+            // This needs a better mechanism to track word sequence.
+            // For now, we'll assume if it's in failedWords, it gets a boost.
+             for (let i = 0; i < FAILED_WORD_PROBABILITY_MULTIPLIER; i++) {
+                weightedPool.push({ word: word, priority: 'failed' });
             }
         } else {
-            wordsToConsider.push({ word, priority: 'normal' });
+            weightedPool.push({ word: word, priority: 'normal' });
         }
     }
-    
-    // Simple selection: pick randomly from the weighted pool
-    if (wordsToConsider.length === 0) {
-        // Fallback if word pool is empty
-        setCurrentWord(null);
-        return;
+    // Add all words from availableWords as normal priority to ensure they are considered
+     for (const word of availableWords) {
+        if (!weightedPool.some(wp => wp.word === word)) {
+             weightedPool.push({ word: word, priority: 'normal' });
+        }
     }
 
-    // Ensure we don't pick the same word twice in a row if possible
-    let nextWord;
-    let attempts = 0;
-    do {
-        const randomIndex = Math.floor(Math.random() * wordsToConsider.length);
-        nextWord = wordsToConsider[randomIndex].word;
-        attempts++;
-    } while (nextWord === currentWord && attempts < wordsToConsider.length * 2); // Allow a few attempts to pick a different word
+    // Shuffle the weighted pool to randomize selection
+    weightedPool.sort(() => Math.random() - 0.5);
 
-    setCurrentWord(nextWord);
-    // Remove the selected word from the main pool to avoid immediate repetition (unless it's a failed word with high probability)
-    // This logic needs refinement for failed words. For now, a simple removal.
-    setAvailableWords(prevWords => prevWords.filter(w => w !== nextWord));
+    // Attempt to pick a word that isn't the current word
+    for (const item of weightedPool) {
+        if (item.word !== currentWord || attempts >= weightedPool.length * 2) {
+            wordToReturn = item.word;
+            break;
+        }
+        attempts++;
+    }
+
+    if (wordToReturn) {
+        // Remove the chosen word from the immediate pool to prevent immediate repetition
+        setAvailableWords(prevWords => prevWords.filter(w => w !== wordToReturn));
+        setCurrentWord(wordToReturn);
+    } else {
+        // No words left or couldn't find a different one
+        setCurrentWord(null); // Signal end of game
+    }
   };
 
+  // --- Game State Management ---
   const startGame = () => {
     setScore(0);
     setFailedWords([]); // Clear failed words for a new game
-    setAvailableWords(availableWords); // Reset available words
-    selectNextWord();
+    // Reload all words for a new game
+    const loadAllWords = async () => {
+      const response = await fetch('/jly-pairs.json');
+      const data = await response.json();
+      setAvailableWords(data.filter(item => item.correct.length <= MAX_WORD_LENGTH).map(item => item.correct));
+    };
+    loadAllWords();
+    selectNextWord(); // Pick the first word
     setGameStarted(true);
     setIsNewGameConfirmationVisible(false); // Hide confirmation
   };
@@ -128,48 +155,39 @@ export default function Home() {
     setIsNewGameConfirmationVisible(false); // Hide confirmation if disabled
   };
 
+  // --- Input Handling ---
   const checkWord = () => {
     if (!currentWord) return;
 
     if (inputValue.toLowerCase() === currentWord) {
       setScore(prevScore => prevScore + 1);
-      // Trigger confetti
-      confetti({
-        origin: { y: 0.8 },
-        particleCount: 150,
-        spread: 180,
-        angle: 90,
-      });
+      confetti({ origin: { y: 0.8 }, particleCount: 150, spread: 180, angle: 90 });
 
-      // Clear failed words if a correct word is guessed
+      // Remove from failed words if it was failed before
       const updatedFailedWords = failedWords.filter(fw => fw.word !== currentWord);
       setFailedWords(updatedFailedWords);
       saveToLocalStorage(FAILED_WORDS_STORAGE_KEY, updatedFailedWords);
 
-      // Move to next word
       selectNextWord();
       setInputValue('');
     } else {
-      // Handle incorrect guess
+      // Record as failed word
       const newFailedWord = { word: currentWord, timestamp: Date.now() };
       setFailedWords(prevFailed => {
-        // Prevent adding duplicates if already failed in this session
+        // Add only if not already in the list for this session to avoid duplicates
         if (!prevFailed.some(fw => fw.word === currentWord)) {
           return [...prevFailed, newFailedWord];
         }
         return prevFailed;
       });
-      saveToLocalStorage(FAILED_WORDS_STORAGE_KEY, [...failedWords, newFailedWord].filter((v,i,a)=>a.findIndex(t=>(t.word === v.word))===i)); // De-duplicate on save
+      saveToLocalStorage(FAILED_WORDS_STORAGE_KEY, [...failedWords, newFailedWord].filter((v,i,a)=>a.findIndex(t=>(t.word === v.word))===i)); // Ensure unique words on save
 
-      // Optionally: End game or give another chance
-      // For now, we just move to the next word and make it reappear later
-      selectNextWord();
+      selectNextWord(); // Move to the next word
       setInputValue('');
     }
   };
   
   const handleInputChange = (e) => {
-      // Limit input length to MAX_WORD_LENGTH
       setInputValue(e.target.value.slice(0, MAX_WORD_LENGTH));
   };
 
@@ -179,21 +197,52 @@ export default function Home() {
     }
   };
 
-  // --- High Score Management ---
+  // --- Game Over and High Score Logic ---
   useEffect(() => {
-    const handleGameOver = () => {
-      const newHighScores = [...highScores, { score, date: new Date().toLocaleDateString() }];
-      newHighScores.sort((a, b) => b.score - a.score); // Sort descending
-      const topScores = newHighScores.slice(0, MAX_HIGH_SCORES);
+    if (gameStarted && currentWord === null && availableWords.length === 0) { // Game over condition: no more words available
+      const updatedHighScores = [...highScores, { score, date: new Date().toLocaleDateString() }];
+      updatedHighScores.sort((a, b) => b.score - a.score); // Sort descending
+      const topScores = updatedHighScores.slice(0, MAX_HIGH_SCORES);
       setHighScores(topScores);
       saveToLocalStorage(HIGH_SCORES_STORAGE_KEY, topScores);
-    };
-
-    if (gameStarted && !currentWord && inputValue === '') { // Game over condition: no more words, no pending input
-       handleGameOver();
-       setGameStarted(false);
+      setGameStarted(false); // Reset game state
     }
-  }, [currentWord, score, gameStarted, highScores, availableWords]); // Dependencies
+  }, [currentWord, availableWords, score, gameStarted, highScores]); // Dependencies
+
+  // --- Dynamic Font Size -------------
+  const calculateFontSize = (word) => {
+      const baseSize = 5; // vh units or similar
+      const wordLength = word.length;
+      const maxLength = MAX_WORD_LENGTH;
+      // Simple scaling: font size decreases as word length increases beyond a certain point
+      // This is a basic approach; a proper solution might use a measuring element.
+      // For now, let's use a clamp-like calculation in CSS/inline style.
+      let fontSize;
+      if (wordLength <= 10) {
+          fontSize = '6rem'; // Large font for shorter words
+      } else if (wordLength <= 15) {
+          fontSize = '5rem'; // Slightly smaller
+      } else {
+          fontSize = '4rem'; // Smallest for longest words
+      }
+      // Further dynamic adjustment based on screen width could be added here.
+      // The clamp() CSS function is ideal for this, but needs to be applied via CSS.
+      // For inline style, we can approximate:
+      const maxWidthFactor = 0.8; // Adjust this factor
+      const scale = Math.min(1, (maxLength - wordLength) / (maxLength - 10)) * maxWidthFactor + (1 - maxWidthFactor);
+      // Example: word 10 chars -> scale 1; word 15 chars -> scale 0.5
+      // This is just an idea, actual implementation with clamp in CSS is better.
+      
+      // Using clamp function directly for approximation:
+      // clamp(min, preferred, max)
+      // min: 3rem, preferred: calc(6vw + X%), max: 7rem
+      // The CSS `clamp` function is superior, applying it dynamically via inline style is complex.
+      // Let's rely on the CSS class and a simple inline style for demonstration.
+
+      return `clamp(3rem, calc(5vw + ${Math.max(0, wordLength - 10)} * 0.5vw), 7rem)`; 
+
+  };
+
 
   // --- Render ---
   return (
@@ -230,10 +279,10 @@ export default function Home() {
       {gameStarted && currentWord && (
         <div className="text-center">
           <p className="text-xl mb-4">Score: {score}</p>
-          <div className={`text-7xl font-bold mb-6 text-balance ${styles.wordPlaceholder} `}>
-             {/* Font size adaptation: a simple approach - use a container with overflow hidden and adjust font size */}
+          <div className={`${styles.wordPlaceholder} text-7xl font-bold mb-6 text-balance`}>
+             {/* Font size adaptation using the CSS class and an inline style for demonstration */}
              <span className={styles.wordWrapper}>
-               <span style={{ fontSize: `clamp(3rem, calc(7vw + ${Math.max(0, currentWord.length - MAX_WORD_LENGTH)} * 0.5vw), 7rem)` }}>
+               <span style={{ fontSize: calculateFontSize(currentWord) }}>
                  {currentWord}
                </span>
              </span>
@@ -254,7 +303,15 @@ export default function Home() {
         </div>
       )}
 
-      <div className={`mt-12 w-full max-w-lg ${!gameStarted ? 'hidden' : ''}`}>
+      {gameStarted && currentWord === null && availableWords.length === 0 && (
+        <div className="text-center">
+            <h2 className="text-3xl font-bold mb-4">Game Over!</h2>
+            <p className="text-xl mb-6">Your final score: {score}</p>
+            <button onClick={handleNewGameClick} className="btn-primary px-8 py-4 text-2xl">Play Again</button>
+        </div>
+      )}
+
+      <div className={`mt-12 w-full max-w-lg ${gameStarted ? 'hidden' : ''}`}>
         <h3 className="text-3xl font-bold mb-4 text-center">High Scores</h3>
         <ul className="list-none p-0 m-0">
           {highScores.length > 0 ? (
@@ -270,8 +327,6 @@ export default function Home() {
           )}
         </ul>
       </div>
-      
-      {/* Failed words display can be added here if desired */}
     </div>
   );
 }
