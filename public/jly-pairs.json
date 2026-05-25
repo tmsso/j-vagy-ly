@@ -1620,11 +1620,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "alásüllyed",
-    "wrong": "alásüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "aláírásgyűjtés",
     "wrong": "aláírásgyűlytés",
     "bothCorrect": false
@@ -1637,11 +1632,6 @@
   {
     "correct": "amellyel",
     "wrong": "amejjel",
-    "bothCorrect": false
-  },
-  {
-    "correct": "amellyel",
-    "wrong": "ameljel",
     "bothCorrect": false
   },
   {
@@ -2985,11 +2975,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "begallyaz",
-    "wrong": "begaljaz",
-    "bothCorrect": false
-  },
-  {
     "correct": "begereblyéz",
     "wrong": "begerebjéz",
     "bothCorrect": false
@@ -4200,18 +4185,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "belesüllyed",
-    "wrong": "belesüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "belesüllyeszt",
     "wrong": "belesüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "belesüllyeszt",
-    "wrong": "belesüljeszt",
     "bothCorrect": false
   },
   {
@@ -4660,18 +4635,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "besüllyed",
-    "wrong": "besüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "besüllyedés",
     "wrong": "besüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "besüllyedés",
-    "wrong": "besüljedés",
     "bothCorrect": false
   },
   {
@@ -4680,18 +4645,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "besüllyedő",
-    "wrong": "besüljedő",
-    "bothCorrect": false
-  },
-  {
     "correct": "besüllyeszt",
     "wrong": "besüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "besüllyeszt",
-    "wrong": "besüljeszt",
     "bothCorrect": false
   },
   {
@@ -5282,11 +5237,6 @@
   {
     "correct": "bokasüllyedés",
     "wrong": "bokasüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "bokasüllyedés",
-    "wrong": "bokasüljedés",
     "bothCorrect": false
   },
   {
@@ -10935,18 +10885,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "ellyukad",
-    "wrong": "eljukad",
-    "bothCorrect": false
-  },
-  {
     "correct": "ellyukaszt",
     "wrong": "ejjukaszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "ellyukaszt",
-    "wrong": "eljukaszt",
     "bothCorrect": false
   },
   {
@@ -11420,18 +11360,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "elsüllyed",
-    "wrong": "elsüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "elsüllyedt",
     "wrong": "elsüjjedt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "elsüllyedt",
-    "wrong": "elsüljedt",
     "bothCorrect": false
   },
   {
@@ -11440,18 +11370,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "elsüllyedés",
-    "wrong": "elsüljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "elsüllyeszt",
     "wrong": "elsüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "elsüllyeszt",
-    "wrong": "elsüljeszt",
     "bothCorrect": false
   },
   {
@@ -11460,28 +11380,13 @@
     "bothCorrect": false
   },
   {
-    "correct": "elsüllyesztet",
-    "wrong": "elsüljesztet",
-    "bothCorrect": false
-  },
-  {
     "correct": "elsüllyeszthető",
     "wrong": "elsüjjeszthető",
     "bothCorrect": false
   },
   {
-    "correct": "elsüllyeszthető",
-    "wrong": "elsüljeszthető",
-    "bothCorrect": false
-  },
-  {
     "correct": "elsüllyesztés",
     "wrong": "elsüjjesztés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "elsüllyesztés",
-    "wrong": "elsüljesztés",
     "bothCorrect": false
   },
   {
@@ -12360,11 +12265,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "előresüllyed",
-    "wrong": "előresüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "előreterjed",
     "wrong": "előreterlyed",
     "bothCorrect": false
@@ -13130,11 +13030,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "fagally",
-    "wrong": "fagalj",
-    "bothCorrect": false
-  },
-  {
     "correct": "fagolyó",
     "wrong": "fagojó",
     "bothCorrect": false
@@ -13172,11 +13067,6 @@
   {
     "correct": "faithfully",
     "wrong": "faithfujj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "faithfully",
-    "wrong": "faithfulj",
     "bothCorrect": false
   },
   {
@@ -13707,11 +13597,6 @@
   {
     "correct": "fearfully",
     "wrong": "fearfujj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "fearfully",
-    "wrong": "fearfulj",
     "bothCorrect": false
   },
   {
@@ -15320,11 +15205,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "felgallyaz",
-    "wrong": "felgaljaz",
-    "bothCorrect": false
-  },
-  {
     "correct": "felgereblyéz",
     "wrong": "felgerebjéz",
     "bothCorrect": false
@@ -15905,11 +15785,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "fellyuggat",
-    "wrong": "feljuggat",
-    "bothCorrect": false
-  },
-  {
     "correct": "felmorajlik",
     "wrong": "felmoralylik",
     "bothCorrect": false
@@ -16355,11 +16230,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "felüllyukaszt",
-    "wrong": "felüljukaszt",
-    "bothCorrect": false
-  },
-  {
     "correct": "felülrajzol",
     "wrong": "felülralyzol",
     "bothCorrect": false
@@ -16442,11 +16312,6 @@
   {
     "correct": "fenyőgally",
     "wrong": "fenyőgajj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "fenyőgally",
-    "wrong": "fenyőgalj",
     "bothCorrect": false
   },
   {
@@ -19580,18 +19445,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "főtesüllyedés",
-    "wrong": "főtesüljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "főtesüllyesztés",
     "wrong": "főtesüjjesztés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "főtesüllyesztés",
-    "wrong": "főtesüljesztés",
     "bothCorrect": false
   },
   {
@@ -19632,11 +19487,6 @@
   {
     "correct": "fűzfagally",
     "wrong": "fűzfagajj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "fűzfagally",
-    "wrong": "fűzfagalj",
     "bothCorrect": false
   },
   {
@@ -19750,18 +19600,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "gally",
-    "wrong": "galj",
-    "bothCorrect": false
-  },
-  {
     "correct": "gallya",
     "wrong": "gajja",
-    "bothCorrect": false
-  },
-  {
-    "correct": "gallya",
-    "wrong": "galja",
     "bothCorrect": false
   },
   {
@@ -19770,18 +19610,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "gallyacska",
-    "wrong": "galjacska",
-    "bothCorrect": false
-  },
-  {
     "correct": "gallyas",
     "wrong": "gajjas",
-    "bothCorrect": false
-  },
-  {
-    "correct": "gallyas",
-    "wrong": "galjas",
     "bothCorrect": false
   },
   {
@@ -19790,18 +19620,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "gallyaz",
-    "wrong": "galjaz",
-    "bothCorrect": false
-  },
-  {
     "correct": "gallyfa",
     "wrong": "gajjfa",
-    "bothCorrect": false
-  },
-  {
-    "correct": "gallyfa",
-    "wrong": "galjfa",
     "bothCorrect": false
   },
   {
@@ -20977,11 +20797,6 @@
   {
     "correct": "gyomorsüllyedés",
     "wrong": "gyomorsüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "gyomorsüllyedés",
-    "wrong": "gyomorsüljedés",
     "bothCorrect": false
   },
   {
@@ -25355,11 +25170,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "hellyel-közzel",
-    "wrong": "heljel-közzel",
-    "bothCorrect": false
-  },
-  {
     "correct": "helybeli",
     "wrong": "hejbeli",
     "bothCorrect": false
@@ -26860,11 +26670,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "hollywood",
-    "wrong": "holjwood",
-    "bothCorrect": false
-  },
-  {
     "correct": "hollóhaj",
     "wrong": "hollóhaly",
     "bothCorrect": false
@@ -27717,11 +27522,6 @@
   {
     "correct": "hátrasüllyed",
     "wrong": "hátrasüjjed",
-    "bothCorrect": false
-  },
-  {
-    "correct": "hátrasüllyed",
-    "wrong": "hátrasüljed",
     "bothCorrect": false
   },
   {
@@ -28772,11 +28572,6 @@
   {
     "correct": "idesüllyed",
     "wrong": "idesüjjed",
-    "bothCorrect": false
-  },
-  {
-    "correct": "idesüllyed",
-    "wrong": "idesüljed",
     "bothCorrect": false
   },
   {
@@ -40655,18 +40450,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "kisüllyed",
-    "wrong": "kisüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "kisüllyeszt",
     "wrong": "kisüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "kisüllyeszt",
-    "wrong": "kisüljeszt",
     "bothCorrect": false
   },
   {
@@ -44505,11 +44290,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "legallyaz",
-    "wrong": "legaljaz",
-    "bothCorrect": false
-  },
-  {
     "correct": "legbeljebb",
     "wrong": "legbellyebb",
     "bothCorrect": false
@@ -45715,18 +45495,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "lesüllyed",
-    "wrong": "lesüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "lesüllyedt",
     "wrong": "lesüjjedt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "lesüllyedt",
-    "wrong": "lesüljedt",
     "bothCorrect": false
   },
   {
@@ -45735,18 +45505,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "lesüllyedő",
-    "wrong": "lesüljedő",
-    "bothCorrect": false
-  },
-  {
     "correct": "lesüllyeszt",
     "wrong": "lesüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "lesüllyeszt",
-    "wrong": "lesüljeszt",
     "bothCorrect": false
   },
   {
@@ -45912,11 +45672,6 @@
   {
     "correct": "literally",
     "wrong": "literajj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "literally",
-    "wrong": "literalj",
     "bothCorrect": false
   },
   {
@@ -48910,28 +48665,13 @@
     "bothCorrect": false
   },
   {
-    "correct": "megsüllyed",
-    "wrong": "megsüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "megsüllyedés",
     "wrong": "megsüjjedés",
     "bothCorrect": false
   },
   {
-    "correct": "megsüllyedés",
-    "wrong": "megsüljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "megsüllyeszt",
     "wrong": "megsüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "megsüllyeszt",
-    "wrong": "megsüljeszt",
     "bothCorrect": false
   },
   {
@@ -52725,11 +52465,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "odasüllyed",
-    "wrong": "odasüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "odaterjeszt",
     "wrong": "odaterlyeszt",
     "bothCorrect": false
@@ -52757,11 +52492,6 @@
   {
     "correct": "odorsüllyeszték",
     "wrong": "odorsüjjeszték",
-    "bothCorrect": false
-  },
-  {
-    "correct": "odorsüllyeszték",
-    "wrong": "odorsüljeszték",
     "bothCorrect": false
   },
   {
@@ -53592,11 +53322,6 @@
   {
     "correct": "oltógally",
     "wrong": "oltógajj",
-    "bothCorrect": false
-  },
-  {
-    "correct": "oltógally",
-    "wrong": "oltógalj",
     "bothCorrect": false
   },
   {
@@ -57005,18 +56730,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "rally",
-    "wrong": "ralj",
-    "bothCorrect": false
-  },
-  {
     "correct": "rallye",
     "wrong": "rajje",
-    "bothCorrect": false
-  },
-  {
-    "correct": "rallye",
-    "wrong": "ralje",
     "bothCorrect": false
   },
   {
@@ -58235,11 +57950,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "rásüllyed",
-    "wrong": "rásüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "ráterjed",
     "wrong": "ráterlyed",
     "bothCorrect": false
@@ -58347,11 +58057,6 @@
   {
     "correct": "rétegsüllyedés",
     "wrong": "rétegsüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "rétegsüllyedés",
-    "wrong": "rétegsüljedés",
     "bothCorrect": false
   },
   {
@@ -61990,11 +61695,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "szintsüllyedés",
-    "wrong": "szintsüljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "szipoly",
     "wrong": "szipoj",
     "bothCorrect": true
@@ -65215,18 +64915,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyed",
-    "wrong": "süljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyedezik",
     "wrong": "süjjedezik",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyedezik",
-    "wrong": "süljedezik",
     "bothCorrect": false
   },
   {
@@ -65235,18 +64925,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyedés",
-    "wrong": "süljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyedő",
     "wrong": "süjjedő",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyedő",
-    "wrong": "süljedő",
     "bothCorrect": false
   },
   {
@@ -65255,18 +64935,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyeszt",
-    "wrong": "süljeszt",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyesztet",
     "wrong": "süjjesztet",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyesztet",
-    "wrong": "süljesztet",
     "bothCorrect": false
   },
   {
@@ -65275,18 +64945,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyesztett",
-    "wrong": "süljesztett",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyeszthető",
     "wrong": "süjjeszthető",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyeszthető",
-    "wrong": "süljeszthető",
     "bothCorrect": false
   },
   {
@@ -65295,18 +64955,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyesztve",
-    "wrong": "süljesztve",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyesztékmaró",
     "wrong": "süjjesztékmaró",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyesztékmaró",
-    "wrong": "süljesztékmaró",
     "bothCorrect": false
   },
   {
@@ -65315,28 +64965,13 @@
     "bothCorrect": false
   },
   {
-    "correct": "süllyesztés",
-    "wrong": "süljesztés",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyesztő",
     "wrong": "süjjesztő",
     "bothCorrect": false
   },
   {
-    "correct": "süllyesztő",
-    "wrong": "süljesztő",
-    "bothCorrect": false
-  },
-  {
     "correct": "süllyesztőfúrás",
     "wrong": "süjjesztőfúrás",
-    "bothCorrect": false
-  },
-  {
-    "correct": "süllyesztőfúrás",
-    "wrong": "süljesztőfúrás",
     "bothCorrect": false
   },
   {
@@ -65717,11 +65352,6 @@
   {
     "correct": "talajsüllyedés",
     "wrong": "talajsüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "talajsüllyedés",
-    "wrong": "talajsüljedés",
     "bothCorrect": false
   },
   {
@@ -68542,11 +68172,6 @@
   {
     "correct": "továbbsüllyed",
     "wrong": "továbbsüjjed",
-    "bothCorrect": false
-  },
-  {
-    "correct": "továbbsüllyed",
-    "wrong": "továbbsüljed",
     "bothCorrect": false
   },
   {
@@ -71780,11 +71405,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "veszéllyel",
-    "wrong": "veszéljel",
-    "bothCorrect": false
-  },
-  {
     "correct": "veszély",
     "wrong": "veszéj",
     "bothCorrect": false
@@ -72310,11 +71930,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "visszagallyaz",
-    "wrong": "visszagaljaz",
-    "bothCorrect": false
-  },
-  {
     "correct": "visszagerjeszt",
     "wrong": "visszagerlyeszt",
     "bothCorrect": false
@@ -72705,18 +72320,8 @@
     "bothCorrect": false
   },
   {
-    "correct": "visszasüllyed",
-    "wrong": "visszasüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "visszasüllyeszt",
     "wrong": "visszasüjjeszt",
-    "bothCorrect": false
-  },
-  {
-    "correct": "visszasüllyeszt",
-    "wrong": "visszasüljeszt",
     "bothCorrect": false
   },
   {
@@ -73580,11 +73185,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "végigsüllyed",
-    "wrong": "végigsüljed",
-    "bothCorrect": false
-  },
-  {
     "correct": "végigterjed",
     "wrong": "végigterlyed",
     "bothCorrect": false
@@ -73762,11 +73362,6 @@
   {
     "correct": "vérsüllyedés",
     "wrong": "vérsüjjedés",
-    "bothCorrect": false
-  },
-  {
-    "correct": "vérsüllyedés",
-    "wrong": "vérsüljedés",
     "bothCorrect": false
   },
   {
@@ -74300,11 +73895,6 @@
     "bothCorrect": false
   },
   {
-    "correct": "zsigersüllyedés",
-    "wrong": "zsigersüljedés",
-    "bothCorrect": false
-  },
-  {
     "correct": "zsilipdíj",
     "wrong": "zsilipdíly",
     "bothCorrect": false
@@ -74447,11 +74037,6 @@
   {
     "correct": "zsöllye",
     "wrong": "zsöjje",
-    "bothCorrect": false
-  },
-  {
-    "correct": "zsöllye",
-    "wrong": "zsölje",
     "bothCorrect": false
   },
   {
