@@ -6,6 +6,7 @@ import ScorePanel from './components/ScorePanel';
 import Instructions from './components/Instructions';
 import { JLyPair, loadPairs } from './utils/pairs';
 import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, manualRemove, FailedWordStat } from './utils/gameLogic';
+import { AUTO_ADVANCE_DELAY_MS, AUTO_ADVANCE_DELAY_SECONDS } from './constants';
 import confetti from 'canvas-confetti';
 
 export default function Home() {
@@ -16,16 +17,34 @@ export default function Home() {
   const [showFailedWordsHistory, setShowFailedWordsHistory] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [wordToRemove, setWordToRemove] = useState<string | null>(null);
+  const [isAutoAdvanceEnabled, setIsAutoAdvanceEnabled] = useState(AUTO_ADVANCE_DELAY_SECONDS > 0);
+  const [isCountdownStopped, setIsCountdownStopped] = useState(false);
+  const [countdownRemainingMs, setCountdownRemainingMs] = useState<number | null>(null);
 
   useEffect(() => {
-    const savedScores = JSON.parse(localStorage.getItem('j_ly_high_scores') || '[]');
+    const getStoredJson = <T,>(key: string, fallback: T): T => {
+      try {
+        const storedValue = localStorage.getItem(key);
+        return storedValue ? JSON.parse(storedValue) as T : fallback;
+      } catch {
+        // A previous app version or a manually edited value should not block the game.
+        return fallback;
+      }
+    };
+
+    const storedScores = getStoredJson<unknown>('j_ly_high_scores', []);
+    const savedScores = Array.isArray(storedScores)
+      ? storedScores.filter((score): score is number => typeof score === 'number')
+      : [];
     setHighScores(savedScores);
 
-    const savedFailedWordsStr = localStorage.getItem('j_ly_failed_words');
-    let savedFailedWords: Record<string, FailedWordStat> | undefined;
-    if (savedFailedWordsStr) {
-       savedFailedWords = JSON.parse(savedFailedWordsStr);
-    }
+    const storedFailedWords = getStoredJson<unknown>(
+      'j_ly_failed_words',
+      undefined
+    );
+    const savedFailedWords = storedFailedWords && typeof storedFailedWords === 'object' && !Array.isArray(storedFailedWords)
+      ? storedFailedWords as Record<string, FailedWordStat>
+      : undefined;
 
     loadPairs()
       .then((pairs) => {
@@ -69,19 +88,68 @@ export default function Home() {
 
   const handleAnswerSelect = useCallback((answer: string) => {
     if (!gameState || gameState.isAnswered) return;
+    setIsCountdownStopped(false);
     setGameState(selectAnswer(gameState, answer));
   }, [gameState]);
 
   const handleNextQuestion = useCallback(() => {
     if (!gameState) return;
+    setCountdownRemainingMs(null);
     setGameState(nextQuestion(gameState));
   }, [gameState]);
+
+  const hasCorrectAnswer = Boolean(
+    gameState?.isAnswered &&
+    (gameState.currentPair.bothCorrect || gameState.selectedAnswer === gameState.currentPair.correct)
+  );
+  const canAutoAdvance = AUTO_ADVANCE_DELAY_SECONDS > 0 && isAutoAdvanceEnabled;
+
+  useEffect(() => {
+    if (!hasCorrectAnswer || !canAutoAdvance || isCountdownStopped) {
+      setCountdownRemainingMs(null);
+      return;
+    }
+
+    const finishAt = Date.now() + AUTO_ADVANCE_DELAY_MS;
+    setCountdownRemainingMs(AUTO_ADVANCE_DELAY_MS);
+
+    const intervalId = window.setInterval(() => {
+      const remaining = Math.max(0, finishAt - Date.now());
+      setCountdownRemainingMs(remaining);
+
+      if (remaining === 0) {
+        window.clearInterval(intervalId);
+        handleNextQuestion();
+      }
+    }, 50);
+
+    return () => window.clearInterval(intervalId);
+  }, [canAutoAdvance, handleNextQuestion, hasCorrectAnswer, isCountdownStopped]);
+
+  useEffect(() => {
+    if (!hasCorrectAnswer || !canAutoAdvance || isCountdownStopped) return;
+
+    const stopCountdown = () => setIsCountdownStopped(true);
+    // Capture phase ensures links and buttons stop the timer before their own action runs.
+    document.addEventListener('pointerdown', stopCountdown, true);
+    document.addEventListener('keydown', stopCountdown, true);
+
+    return () => {
+      document.removeEventListener('pointerdown', stopCountdown, true);
+      document.removeEventListener('keydown', stopCountdown, true);
+    };
+  }, [canAutoAdvance, hasCorrectAnswer, isCountdownStopped]);
 
   const handleManualRemoveConfirm = () => {
     if (wordToRemove && gameState) {
       setGameState(manualRemove(gameState, wordToRemove));
       setWordToRemove(null);
     }
+  };
+
+  const handleAutoAdvanceChange = (enabled: boolean) => {
+    setIsAutoAdvanceEnabled(enabled);
+    if (!enabled) setIsCountdownStopped(true);
   };
 
   useEffect(() => {
@@ -124,10 +192,18 @@ export default function Home() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [gameState, handleAnswerSelect, handleNextQuestion, showConfirmModal, wordToRemove]);
 
+  if (error) {
+    return <div className="text-center mt-20 text-error-600">A játék betöltése nem sikerült: {error}</div>;
+  }
+
   if (isLoading || !gameState) return <div className="text-center mt-20">Betöltés...</div>;
 
   const failedWordsList = Object.values(gameState.failedWords);
   const wordToRemoveData = wordToRemove ? gameState.failedWords[wordToRemove] : null;
+  const countdownProgress = countdownRemainingMs === null
+    ? 0
+    : Math.max(0, Math.min(100, (countdownRemainingMs / AUTO_ADVANCE_DELAY_MS) * 100));
+  const countdownSeconds = countdownRemainingMs === null ? 0 : Math.ceil(countdownRemainingMs / 1000);
 
   return (
     <>
@@ -146,14 +222,37 @@ export default function Home() {
             shuffledOptions={gameState.shuffledOptions}
           />
           
-          <div className="flex justify-center mt-4">
+          <div className="flex flex-col items-center mt-4 gap-3">
             <button
               onClick={handleNextQuestion}
               disabled={!gameState.isAnswered}
-              className={`px-8 py-4 rounded-xl text-lg font-bold transition-all ${gameState.isAnswered ? 'btn-primary' : 'btn-secondary opacity-50 cursor-not-allowed'}`}
+              className={`relative overflow-hidden px-8 py-4 rounded-xl text-lg font-bold transition-all ${gameState.isAnswered ? 'btn-primary' : 'btn-secondary opacity-50 cursor-not-allowed'}`}
             >
-              Következő szó (Enter)
+              <span className="relative z-10">Következő szó (Enter)</span>
+              {countdownRemainingMs !== null && (
+                <span
+                  aria-hidden="true"
+                  className="absolute bottom-0 left-0 h-1 bg-white/80 transition-[width] duration-75 ease-linear"
+                  style={{ width: `${countdownProgress}%` }}
+                />
+              )}
             </button>
+            {countdownRemainingMs !== null && (
+              <p className="text-sm text-gray-600" aria-live="polite">
+                Következő szó {countdownSeconds} mp múlva
+              </p>
+            )}
+            {AUTO_ADVANCE_DELAY_SECONDS > 0 && (
+              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isAutoAdvanceEnabled}
+                  onChange={(event) => handleAutoAdvanceChange(event.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+                Automatikus továbblépés helyes válasz után
+              </label>
+            )}
           </div>
 
           <div className="mt-8">

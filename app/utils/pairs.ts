@@ -1,6 +1,7 @@
 export interface JLyPair {
   correct: string;
   wrong: string;
+  bothCorrect?: boolean;
 }
 
 let cachedPairs: JLyPair[] | null = null;

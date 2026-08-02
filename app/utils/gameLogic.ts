@@ -65,7 +65,7 @@ export function initializeGameState(pairs: JLyPair[], savedFailedWords?: Record<
 export function selectAnswer(state: GameState, answer: string): GameState {
   if (state.isAnswered) return state;
   
-  const isCorrect = answer === state.currentPair.correct;
+  const isCorrect = state.currentPair.bothCorrect || answer === state.currentPair.correct;
   const wordKey = state.currentPair.correct;
   const updatedFailedWords = { ...state.failedWords };
   let justMastered: string | null = null;

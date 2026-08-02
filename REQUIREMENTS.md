@@ -21,7 +21,7 @@
   3. Player selects one.
   4. Immediate feedback (correct/incorrect, show correct answer).
   5. Update score.
-  6. Auto‑advance after short delay or via “Next” button.
+  6. Auto‑advance after a configurable short delay (five seconds by default) or via “Next” button. A countdown indicator is shown on the Next button; interaction cancels the active countdown. Setting the delay to `0` disables this feature and hides its checkbox.
 - **Scoring**:
   - Track correct/total rounds.
   - Display current score prominently.
@@ -52,7 +52,7 @@
 
 | Layer            | Technology                     |
 |------------------|--------------------------------|
-| Frontend         | Next.js 15 (App Router)        |
+| Frontend         | Next.js 16 (App Router)        |
 | UI Components    | React 19, Tailwind CSS         |
 | State Management | React hooks (useState, useContext) |
 | Data Generation  | Python script (pre‑build step) |

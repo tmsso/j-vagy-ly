@@ -23,7 +23,7 @@ Per round:
 4. Immediate feedback:
    - Correct: +1 score
    - Wrong: mark miss, optionally show explanation text: "A helyes alak: ..."
-5. Move to next round.
+5. Move to next round, either manually or after the configurable auto-advance countdown for correct answers.
 
 Session state:
 - `score_correct`

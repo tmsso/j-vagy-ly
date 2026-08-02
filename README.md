@@ -6,16 +6,17 @@ A web-based game to practice Hungarian spelling where players choose the correct
 
 ## Features
 
-- **18,365 Hungarian word pairs** generated from `magyar-szavak.txt`
+- **16,682 Hungarian word pairs** generated from `magyar-szavak.txt`
 - **Responsive design** - works on mobile and desktop
 - **Keyboard shortcuts** - 1/2 for options, Space for next, N for new game
 - **Score tracking** - accuracy percentage and progress bar
 - **Instant feedback** - visual indicators for correct/incorrect answers
+- **Optional auto-advance** - correct answers advance after a configurable countdown, with a progress indicator and an in-game opt-out
 - **Hungarian UI** - fully localized for Hungarian users
 
 ## Tech Stack
 
-- **Next.js 15** with App Router
+- **Next.js 16** with App Router
 - **React 19** with TypeScript
 - **Tailwind CSS** for styling
 - **Vercel** for hosting
@@ -55,6 +56,16 @@ npm start
 ```
 
 The build command automatically regenerates the word pairs from `data/magyar-szavak.txt`.
+
+### Auto-advance configuration
+
+Correct answers automatically show the next word after five seconds. Change
+`AUTO_ADVANCE_DELAY_SECONDS` in `app/constants.ts` to adjust the delay. Set it
+to `0` to disable auto-advance entirely; the related checkbox is then hidden.
+
+While a countdown is running, any click or key press stops it for that answer.
+Players can also turn off auto-advance for subsequent correct answers with the
+checkbox below the “Következő szó” button.
 
 ## Deployment on Vercel
 
@@ -123,6 +134,7 @@ Vercel will automatically rebuild with the new data.
    - Player selects an option
    - Immediate feedback with correct answer
    - Score updates automatically
+   - Correct answers start an optional, cancellable auto-advance countdown
 
 ## License
 
