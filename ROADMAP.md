@@ -16,7 +16,7 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 | --- | --- | --- | --- | --- |
 | 0 | MVP game on Vercel | delivered | ✅ met | live at `j-or-ly.vercel.app` since 2026-05 |
 | 1 | Hardening | delivered (#2) | ✅ met | — (headers, full round, mastery confetti verified on production) |
-| 2 | PWA-ready | delivered (#3) | ⏳ device | (a) after merge: production offline check; (b) owner phone install |
+| 2 | PWA-ready | delivered (#3) | ⏳ device | (a) ✅ production offline check met 2026-11-04; (b) owner phone install |
 | 3 | Design pass | brief ready | — | owner runs the pass from `docs/design/BRIEF.md` |
 
 ## Decisions — decided 2026-11-04 (owner, upfront for the hardening batch)
@@ -75,6 +75,12 @@ Batch notes (2026-11-04):
 Input: `docs/design/BRIEF.md` (written in Phase 2). Expected outputs: an app icon set (incl. maskable), a real dark theme, and a visual polish of the game card, feedback and side panels. Then an implementation batch.
 
 **Accept:** the placeholder icons have been replaced, dark mode is re-enabled and legible, and the owner signs off on the look on a phone.
+
+## Execution order from here
+
+1. **Owner device check** (Phase 2 b, ~5 min): open `j-or-ly.vercel.app` on a phone, add it to the home screen (Android Chrome: install prompt or menu → "Install app"; iOS Safari: Share → "Add to Home Screen"), switch on aeroplane mode, open it from the icon, and play a round.
+2. **Design pass** (Phase 3) from `docs/design/BRIEF.md`, then an implementation batch.
+3. Opportunistic: `IDEAS.md` content-quality items (word-initial `ly` giveaways, dictionary curation).
 
 ## Owner steps (no code)
 

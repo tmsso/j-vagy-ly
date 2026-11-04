@@ -43,3 +43,4 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 - `public/sw.js`: network-first page, cache-first hashed assets, stale-while-revalidate data and icons, versioned caches, production-only registration, served `no-cache`.
 - Verified locally against the production build: SW activates, 1 page + 10 assets + 4 data entries cached, and an offline reload is playable on the first visit.
 - Design handover written: `docs/design/BRIEF.md` (icon/identity, dark theme, game-card states, constraints).
+- Merged as #3 (`be7b7d1`). Production check the same day: manifest and `sw.js` served (`no-cache`), SW activated, offline reload playable on first visit, no CSP errors. Accept (a) met; (b) the phone install is the owner's.
