@@ -48,7 +48,18 @@ const nextConfig: NextConfig = {
   // otherwise makes Next guess the wrong root (a build warning on dev machines).
   turbopack: { root: __dirname },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        // The browser must always re-check the service worker script, or a fix
+        // to it could take a long time to reach installed apps.
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+        ],
+      },
+    ];
   },
 };
 

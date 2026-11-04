@@ -12,6 +12,7 @@ A small web game for practising one of Hungarian spelling's classic traps: each 
 - Score, accuracy and a top-3 list, stored locally in the browser
 - Optional auto-advance after a correct answer (configurable, cancellable)
 - Keyboard shortcuts: `1`/`2` or `←`/`→` to choose, `Enter`/`Space` for the next word, `N` (or the "Új játék" button) for a new game, `Esc` to close a dialog
+- Installable as an app (PWA), and playable offline after the first visit
 - Hungarian UI, responsive, no account and no tracking
 
 ## Tech stack

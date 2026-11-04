@@ -10,14 +10,14 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 - Each deliverable lands as one PR with `npm run verify` green locally and CI green on GitHub.
 - When a batch makes a decision, record it in two places: a one-line entry under the phase here, and a comment at the site of the decision.
 
-## Status at a glance (2026-11-04)
+## Status at a glance (refreshed 2026-11-04, end of the hardening/PWA batch)
 
 | Phase | Name | Code | Accept line | Gap to Accept |
 | --- | --- | --- | --- | --- |
 | 0 | MVP game on Vercel | delivered | ✅ met | live at `j-or-ly.vercel.app` since 2026-05 |
-| 1 | Hardening | delivered (PR pending merge) | ⏳ prod | header + round check on production after merge |
-| 2 | PWA-ready | not started | — | everything, plus a phone install check |
-| 3 | Design pass | not started | — | brief to be written in Phase 2 (`docs/design/BRIEF.md`) |
+| 1 | Hardening | delivered (#2) | ✅ met | — (headers, full round, mastery confetti verified on production) |
+| 2 | PWA-ready | delivered (#3) | ⏳ device | (a) after merge: production offline check; (b) owner phone install |
+| 3 | Design pass | brief ready | — | owner runs the pass from `docs/design/BRIEF.md` |
 
 ## Decisions — decided 2026-11-04 (owner, upfront for the hardening batch)
 
@@ -60,6 +60,13 @@ Approach: Next's built-in `app/manifest.ts`, plus a **hand-written service worke
 2. **Service worker.** Versioned caches. Navigations are network-first with a cache fallback (so a deploy never pins users to deleted chunk hashes), `/_next/static/*` is cache-first (content-hashed, immutable), and `jly-pairs.json` is stale-while-revalidate. Old caches are removed on `activate`. Registration happens in production builds only. `sw.js` itself is served `no-cache`.
 3. **Offline behaviour.** After one online visit, a reload with the network off still shows the game and a round is playable. Without a cached copy, the load-failure state shows a Hungarian message instead of crashing.
 4. **Design handover.** `docs/design/BRIEF.md` for Phase 3.
+
+Batch notes (2026-11-04):
+
+- Hand-written `public/sw.js` (~130 lines, commented). The install step also parses the cached page for its `/_next/static/` URLs, and the page posts the chunks it loaded. Together these make the very first visit sufficient for offline play, verified headless without a second online load.
+- The static cache is capped at 80 entries, since hashed chunks from old deploys would otherwise pile up.
+- Icons are placeholders from `design/icon.svg` via `scripts/generate-icons.mjs` (uses the `sharp` that Next already installs).
+- Vercel previews sit behind deployment protection, so the pre-merge check ran against a local `next start` of the identical build. The production check runs after merge (D2).
 
 **Accept:** (a) on the production URL, a headless Chromium check finds the manifest valid, the SW active, and an offline reload playable. (b) **Owner device check:** install to the home screen on a real phone, open it in aeroplane mode, and play a round.
 

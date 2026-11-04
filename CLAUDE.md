@@ -24,12 +24,13 @@ A Hungarian spelling-practice game. Each round shows two spellings of a word tha
 Next.js 16 (App Router, Turbopack) · React 19 · TypeScript (strict) · Tailwind CSS 3 · `canvas-confetti` · Jest · ESLint (flat config) · Python 3 for data generation · Vercel.
 
 - **The word pairs are generated and committed.** `scripts/generate-pairs.py` turns `data/magyar-szavak.txt` into `public/jly-pairs.json`. It also runs as `prebuild`. It is deterministic: the same input gives a byte-identical output, and CI checks that the committed file is current. Never hand-edit the JSON.
+- **PWA:** `app/manifest.ts` (manifest) and `public/sw.js` (hand-written service worker; its header comment explains the caching strategy). Registration is production-only (`app/components/ServiceWorkerRegister.tsx`). Icons are generated from `design/icon.svg` by `node scripts/generate-icons.mjs` and committed; the current ones are placeholders until the design pass (`docs/design/BRIEF.md`).
 - `app/constants.ts` holds the tunable game constants (`AUTO_ADVANCE_DELAY_SECONDS`).
 - Game rules live in `app/utils/gameLogic.ts` and must stay **pure** (no `window`, no storage, no React), so they can be unit-tested. Storage reading, validation and migration sit in their own module.
 
 ## 4. Working rules
 
-- `npm run verify` before every push. It runs lint, typecheck, Jest, pytest and the build. CI runs the same.
+- `npm run verify` before every push. It runs lint, typecheck, Jest, the Python unittest suite and the build. CI runs the same.
 - `localStorage` contents are untrusted input: validate field by field, drop what doesn't fit, and never let bad storage crash the game. Storage keys are versioned. A schema change needs a migration and a test.
 - Pushing to `main` deploys production. Code changes go through a PR. A pure docs sync may go straight to `main`.
 - Before committing, grep the diff for local absolute paths, secrets and the owner's name.

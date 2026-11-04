@@ -35,3 +35,11 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 - Generator rewritten readably and minified. Played pair set unchanged.
 - Quality gates: ESLint flat config, 26 Jest tests, 7 unittest tests, `npm run verify`, GitHub Actions CI.
 - Repo: MIT licence (D1), renamed to `j-vagy-ly` (D4), and the Streamlit/Dash leftovers deleted (D3).
+- Merged as #2 (`1a42cd2`). Accepted on production the same day: headers served, smoke run and mastery confetti with no console errors. Stale remote branches deleted (D3).
+
+## 2026-11-04 — Phase 2 PWA-ready
+
+- `app/manifest.ts` (standalone, Hungarian, maskable icon), `viewport.themeColor`, apple-web-app meta, placeholder icon set.
+- `public/sw.js`: network-first page, cache-first hashed assets, stale-while-revalidate data and icons, versioned caches, production-only registration, served `no-cache`.
+- Verified locally against the production build: SW activates, 1 page + 10 assets + 4 data entries cached, and an offline reload is playable on the first visit.
+- Design handover written: `docs/design/BRIEF.md` (icon/identity, dark theme, game-card states, constraints).
