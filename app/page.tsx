@@ -11,9 +11,16 @@ import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, 
 import { loadProgress, saveCurrentSession, saveFailedWords, saveHighScores, topScores } from './utils/storage';
 import { AUTO_ADVANCE_DELAY_MS, AUTO_ADVANCE_DELAY_SECONDS } from './constants';
 
-/** True when a key press should go to a focused control rather than to the game shortcuts. */
-function isInteractiveTarget(target: EventTarget | null): boolean {
-  return target instanceof HTMLElement && Boolean(target.closest('button, a, input, select, textarea, [contenteditable="true"]'));
+/**
+ * True when Space/Enter should keep their native meaning (press the focused,
+ * enabled button, follow the link, toggle the checkbox). Only those two keys
+ * defer: digits, arrows and N mean nothing to a button, so they always drive
+ * the game, even when a mouse click has left focus on some control.
+ */
+function hasNativeActivation(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  const control = target.closest('button, a[href], input, select, textarea, [contenteditable="true"]');
+  return control !== null && !(control as HTMLButtonElement).disabled;
 }
 
 export default function Home() {
@@ -127,21 +134,19 @@ export default function Home() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!gameState || isDialogOpen || event.altKey || event.ctrlKey || event.metaKey) return;
-      const onControl = isInteractiveTarget(event.target);
 
       switch (event.key) {
         case '1':
         case 'ArrowLeft':
-          if (!onControl && !gameState.isAnswered && gameState.shuffledOptions[0]) handleAnswerSelect(gameState.shuffledOptions[0]);
+          if (!gameState.isAnswered && gameState.shuffledOptions[0]) handleAnswerSelect(gameState.shuffledOptions[0]);
           break;
         case '2':
         case 'ArrowRight':
-          if (!onControl && !gameState.isAnswered && gameState.shuffledOptions[1]) handleAnswerSelect(gameState.shuffledOptions[1]);
+          if (!gameState.isAnswered && gameState.shuffledOptions[1]) handleAnswerSelect(gameState.shuffledOptions[1]);
           break;
         case ' ':
         case 'Enter':
-          // On a focused button/link/checkbox, Space and Enter keep their native meaning.
-          if (onControl) break;
+          if (hasNativeActivation(event.target)) break;
           event.preventDefault(); // Stop Space from scrolling the page
           if (gameState.isAnswered) handleNextQuestion();
           break;
