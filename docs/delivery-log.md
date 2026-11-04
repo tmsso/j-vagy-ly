@@ -53,3 +53,7 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 
 - Vercel project renamed to `j-vagy-ly` (owner). `j-vagy-ly.tmsso.com` attached; DNS-only CNAME added at Cloudflare (owner). Let's Encrypt certificate issued, Vercel config check clean.
 - Verified on the new host: security headers, `sw.js` `no-cache`, manifest, SW activates, offline reload playable, keyboard/focus checks, no CSP errors. `j-or-ly.vercel.app` keeps serving (D5: no redirect).
+
+## 2026-11-04 — Design handoff 01 committed
+
+- Design pass 01 exported from the Claude Design canvas into `docs/design/handoff-01/`: icon master and favicon SVGs, the canvas index and all 13 artboard sources, plus a README with the token, type and manifest decisions. Not implemented yet. That is the next batch.

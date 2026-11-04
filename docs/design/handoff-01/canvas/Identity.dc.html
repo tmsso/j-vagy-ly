@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>J vagy LY? – arculat és tokenek</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:opsz,wght@7..72,600;7..72,700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1080px; box-sizing: border-box; padding: 56px; display: flex; flex-direction: column; gap: 48px; background: #F5F2EA; color: #1C2230; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased">
+
+<div style="display: grid; grid-template-columns: 400px 344px minmax(0, 1fr); gap: 40px">
+
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Alkalmazásikon · master</h2>
+<div style="position: relative; width: 400px; height: 400px">
+<img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="J vagy LY? ikon: két egyforma lap, rajtuk „j” és „ly”" style="display: block; width: 400px; height: 400px">
+<div aria-hidden="true" style="position: absolute; left: 40px; top: 40px; width: 320px; height: 320px; box-sizing: border-box; border-radius: 50%; border: 2px dashed rgba(245, 242, 234, 0.6); opacity: {{safe}}"></div>
+<div aria-hidden="true" style="position: absolute; left: 80px; top: 80px; width: 240px; height: 240px; box-sizing: border-box; border: 1px dashed rgba(245, 242, 234, 0.45); opacity: {{safe}}"></div>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #565D6B">512 × 512, teljes kitöltés. A jel a középső 60%-on belül marad, így körre és lekerekített négyzetre vágva is ép. Két egyforma lap: a játék alapelve, hogy egyik válasz sem kap előnyt.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Maszkolva (Android, iOS)</h2>
+<div style="display: flex; gap: 20px">
+<div style="width: 96px; height: 96px; border-radius: 50%; overflow: hidden"><img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="" style="display: block; width: 96px; height: 96px"></div>
+<div style="width: 96px; height: 96px; border-radius: 30px; overflow: hidden"><img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="" style="display: block; width: 96px; height: 96px"></div>
+<div style="width: 96px; height: 96px; border-radius: 21px; overflow: hidden"><img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="" style="display: block; width: 96px; height: 96px"></div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Méretek</h2>
+<div style="display: flex; align-items: flex-end; gap: 16px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 64px; height: 64px; border-radius: 14px; overflow: hidden"><img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="" style="display: block; width: 64px; height: 64px"></div><span style="font-size: 12px; color: #565D6B">192</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><div style="width: 48px; height: 48px; border-radius: 11px; overflow: hidden"><img src="/_blob/d729ee677d855d5bce9ca703f83c31f8" alt="" style="display: block; width: 48px; height: 48px"></div><span style="font-size: 12px; color: #565D6B">48</span></div>
+<div style="width: 1px; height: 64px; background: #E2DCCD"></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><img src="/_blob/8682030b32f2864cc6df905c35dae3bb" alt="" style="display: block; width: 64px; height: 64px"><span style="font-size: 12px; color: #565D6B">favicon</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><img src="/_blob/8682030b32f2864cc6df905c35dae3bb" alt="" style="display: block; width: 32px; height: 32px"><span style="font-size: 12px; color: #565D6B">32</span></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px"><img src="/_blob/8682030b32f2864cc6df905c35dae3bb" alt="" style="display: block; width: 16px; height: 16px"><span style="font-size: 12px; color: #565D6B">16</span></div>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #565D6B">32 px és alatta külön favicon: csak a betűk, lapok nélkül, hogy a fülön is olvasható legyen.</p>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Manifest és böngészősáv</h2>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+<li style="display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 6px; background: #2C4AAE"></span><code style="font-family: ui-monospace, Menlo, monospace">theme_color</code><span style="color: #565D6B">#2C4AAE</span></li>
+<li style="display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; box-sizing: border-box; border-radius: 6px; background: #F5F2EA; border: 1px solid #D3CBB8"></span><code style="font-family: ui-monospace, Menlo, monospace">background_color</code><span style="color: #565D6B">#F5F2EA</span></li>
+<li style="display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; box-sizing: border-box; border-radius: 6px; background: #F5F2EA; border: 1px solid #D3CBB8"></span><code style="font-family: ui-monospace, Menlo, monospace">themeColor (light)</code><span style="color: #565D6B">#F5F2EA</span></li>
+<li style="display: flex; align-items: center; gap: 10px"><span style="width: 20px; height: 20px; border-radius: 6px; background: #11151D"></span><code style="font-family: ui-monospace, Menlo, monospace">themeColor (dark)</code><span style="color: #565D6B">#11151D</span></li>
+</ul>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Szóvédjegy</h2>
+<div style="height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 20px; background: #FFFDF9; border: 1px solid #E2DCCD">
+<p style="margin: 0; font-family: 'Literata', Georgia, serif; font-size: 48px; font-weight: 700; letter-spacing: -0.015em; color: #1C2230">J vagy <span style="color: #2C4AAE">LY</span>?</p>
+</div>
+<div style="height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 20px; background: #11151D">
+<p style="margin: 0; font-family: 'Literata', Georgia, serif; font-size: 48px; font-weight: 700; letter-spacing: -0.015em; color: #ECEEF3">J vagy <span style="color: #9DB3F5">LY</span>?</p>
+</div>
+<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #565D6B">Literata 700 (OFL, latin-ext: ő, ű). Fejlécben: telefon 24 px, asztali 36 px. Csak az „LY” színes.</p>
+</section>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, 380px) minmax(0, 1fr); gap: 40px">
+<sc-for list="{{tables}}" as="tb" hint-placeholder-count="2">
+<section style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0 0 4px; font-size: 15px; font-weight: 700">{{tb.title}}</h2>
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 8px; padding-bottom: 6px; border-bottom: 1px solid #E2DCCD; font-size: 12px; font-weight: 600; color: #565D6B">
+<span>Token</span><span>Világos</span><span>Sötét</span>
+</div>
+<sc-for list="{{tb.rows}}" as="r" hint-placeholder-count="6">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 96px 96px; gap: 8px; align-items: center; min-height: 30px; font-size: 13px">
+<code style="font-family: ui-monospace, Menlo, monospace; color: #1C2230">{{r.n}}</code>
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; flex: none; box-sizing: border-box; border-radius: 5px; background: {{r.l}}; border: 1px solid rgba(28, 34, 48, 0.15)"></span><span style="color: #565D6B; font-variant-numeric: tabular-nums">{{r.l}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px"><span style="width: 18px; height: 18px; flex: none; box-sizing: border-box; border-radius: 5px; background: {{r.d}}; border: 1px solid rgba(28, 34, 48, 0.15)"></span><span style="color: #565D6B; font-variant-numeric: tabular-nums">{{r.d}}</span></span>
+</div>
+</sc-for>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 15px; font-weight: 700">Betűk</h2>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: 'Literata', Georgia, serif; font-size: 32px; font-weight: 700">ablakmélyedés</span>
+<span style="font-size: 12px; color: #565D6B">Literata 700 · a válaszszavak, szóvédjegy, szólista</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 20px; font-weight: 600">Melyik a helyes?</span>
+<span style="font-size: 12px; color: #565D6B">Inter 400–700 · minden felületi szöveg (már a projektben van)</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px">
+<span style="font-size: 13px; font-weight: 600">Szóméret a hosszabb opció hossza szerint</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 8px; font-size: 13px; font-variant-numeric: tabular-nums">
+<span style="color: #565D6B; font-weight: 600">betű</span><span style="color: #565D6B; font-weight: 600">telefon</span><span style="color: #565D6B; font-weight: 600">asztali</span>
+<span>≤ 9</span><span>44 px</span><span>52 px</span>
+<span>10–12</span><span>34 px</span><span>40 px</span>
+<span>13–14</span><span>30 px</span><span>34 px</span>
+<span>15</span><span>28 px</span><span>32 px</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"showSafeZone":{"editor":"boolean","default":true},"$preview":{"width":1280,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      safe: (this.props.showSafeZone ?? true) ? 1 : 0,
+      tables: [
+        { title: 'Felületek és szöveg', rows: [
+          { n: 'paper (bg)', l: '#F5F2EA', d: '#11151D' },
+          { n: 'card', l: '#FFFDF9', d: '#1A1F2A' },
+          { n: 'subtle', l: '#EFEBE1', d: '#242B38' },
+          { n: 'line', l: '#E2DCCD', d: '#313949' },
+          { n: 'ink', l: '#1C2230', d: '#ECEEF3' },
+          { n: 'ink-muted', l: '#565D6B', d: '#A4ABB9' },
+          { n: 'primary-600 (fill)', l: '#2C4AAE', d: '#3F60CC' },
+          { n: 'primary text / link', l: '#2C4AAE', d: '#9DB3F5' },
+          { n: 'primary-50 (tint)', l: '#EEF2FB', d: '#1E2A4D' }
+        ] },
+        { title: 'Visszajelzés', rows: [
+          { n: 'success-50 (tint)', l: '#E4F3EC', d: '#0F2E24' },
+          { n: 'success-600 (line)', l: '#1E8A63', d: '#3DBE8C' },
+          { n: 'success-700 (text)', l: '#136B4F', d: '#7EDDB5' },
+          { n: 'error-50 (tint)', l: '#FCEDE6', d: '#3A1D12' },
+          { n: 'error-600 (line)', l: '#C4501F', d: '#F08250' },
+          { n: 'error-700 (text)', l: '#A13C14', d: '#F7AB87' },
+          { n: 'focus ring', l: '#2C4AAE', d: '#9DB3F5' }
+        ] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>J vagy LY? – telefon</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:opsz,wght@7..72,600;7..72,700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div onPointerDown="{{rootDown}}" style="width: 390px; min-height: 1600px; box-sizing: border-box; display: flex; flex-direction: column; background: {{t.bg}}; color: {{t.ink}}; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased">
+
+<header style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding: 10px 16px; box-sizing: border-box; border-bottom: 1px solid {{t.line}}">
+<h1 style="margin: 0; font-family: 'Literata', Georgia, serif; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; color: {{t.ink}}">J vagy <span style="color: {{t.pText}}">LY</span>?</h1>
+<div style="display: flex; align-items: center; gap: 8px">
+<p aria-label="{{score.aria}}" style="margin: 0; display: flex; align-items: baseline; gap: 4px; padding: 7px 12px; border-radius: 999px; background: {{t.card}}; border: 1px solid {{t.line}}; font-size: 16px; font-weight: 700; color: {{t.ink}}; font-variant-numeric: tabular-nums">
+<span>{{score.c}}</span>
+<span style="font-weight: 500; color: {{t.ink2}}">/ {{score.t}}</span>
+</p>
+<button type="button" style="min-height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 12px; border: 1px solid {{t.line}}; background: {{t.card}}; color: {{t.ink}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7"></path><path d="M4 4v4.5h4.5"></path></svg>
+Új játék
+</button>
+</div>
+</header>
+
+<main style="display: flex; flex-direction: column; gap: 16px; padding: 16px">
+
+<section aria-labelledby="kerdes" style="display: flex; flex-direction: column; gap: 16px; padding: 20px 16px; border-radius: 24px; background: {{t.card}}; border: 1px solid {{t.line}}; box-shadow: {{t.shadow}}">
+<h2 id="kerdes" style="margin: 0; text-align: center; font-size: 17px; font-weight: 600; color: {{t.ink2}}">Melyik a helyes?</h2>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{opts}}" as="o" hint-placeholder-count="2">
+<button type="button" onClick="{{o.pick}}" disabled="{{answered}}" aria-label="{{o.aria}}" style="width: 100%; min-height: 112px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 16px 12px; box-sizing: border-box; border-radius: 18px; border: 2px solid {{o.line}}; border-bottom-width: 5px; background: {{o.bg}}; color: {{o.color}}; font-family: inherit; cursor: {{o.cursor}}">
+<span style="font-family: 'Literata', Georgia, serif; font-weight: 700; font-size: {{o.size}}px; line-height: 1.15; text-decoration-line: {{o.deco}}; text-decoration-color: {{o.line}}; text-decoration-thickness: 3px">{{o.text}}</span>
+<sc-if value="{{o.right}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: {{t.sText}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>{{o.label}}</span>
+</sc-if>
+<sc-if value="{{o.wrong}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: {{t.eText}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>{{o.label}}</span>
+</sc-if>
+</button>
+</sc-for>
+</div>
+
+<sc-if value="{{answered}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 16px; background: {{t.sub}}">
+<div style="display: flex; align-items: center; gap: 12px">
+<span aria-hidden="true" style="flex: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: {{fb.badgeBg}}; color: {{t.onBadge}}">
+<sc-if value="{{fb.ok}}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<sc-if value="{{fb.bad}}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></sc-if>
+</span>
+<h3 style="margin: 0; font-size: 20px; font-weight: 700; color: {{t.ink}}">{{fb.title}}</h3>
+</div>
+<sc-if value="{{fb.single}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; font-size: 16px; color: {{t.ink2}}">A helyes alak: <strong style="font-family: 'Literata', Georgia, serif; font-size: 20px; color: {{t.ink}}">{{pair.c}}</strong></p>
+</sc-if>
+<sc-if value="{{fb.bad}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 15px; color: {{t.ink2}}">A másik opció: <span style="font-family: 'Literata', Georgia, serif; text-decoration-line: line-through">{{pair.w}}</span></p>
+</sc-if>
+<sc-if value="{{fb.both}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 15px; color: {{t.ink2}}">Mindkét alak létezik. Nézd meg, mit jelentenek:</p>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{links}}" as="l" hint-placeholder-count="1">
+<a href="{{l.href}}" target="_blank" rel="noopener noreferrer" style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; box-sizing: border-box; border-radius: 12px; background: {{t.card}}; border: 1px solid {{t.line}}; color: {{t.pText}}; font-size: 15px; font-weight: 600; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg>
+Mi az, hogy „{{l.w}}”?
+</a>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</section>
+
+<div style="display: flex; flex-direction: column; gap: 10px">
+<button type="button" onClick="{{next}}" disabled="{{notAnswered}}" style="position: relative; overflow: hidden; min-height: 56px; border: none; border-radius: 16px; background: {{nb.bg}}; color: {{nb.fg}}; font-family: inherit; font-size: 18px; font-weight: 700; cursor: {{nb.cursor}}">
+Következő szó
+<sc-if value="{{cd.on}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position: absolute; left: 0; bottom: 0; height: 5px; width: {{cd.pct}}%; background: rgba(255, 255, 255, 0.75)"></span></sc-if>
+</button>
+<sc-if value="{{cd.on}}" hint-placeholder-val="{{ false }}">
+<p aria-live="polite" style="margin: 0; text-align: center; font-size: 14px; color: {{t.ink2}}">Továbblépés <strong style="color: {{t.ink}}; font-variant-numeric: tabular-nums">{{cd.secs}} mp</strong> múlva · koppints bárhova a megállításhoz</p>
+</sc-if>
+<sc-if value="{{cd.stopped}}" hint-placeholder-val="{{ false }}">
+<p aria-live="polite" style="margin: 0; text-align: center; font-size: 14px; color: {{t.ink2}}">Megállítva. Lépj tovább, amikor készen állsz.</p>
+</sc-if>
+<label style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 4px; font-size: 15px; color: {{t.ink2}}; cursor: pointer">
+<span style="position: relative; display: inline-flex; flex: none">
+<input type="checkbox" checked="{{auto}}" onChange="{{toggleAuto}}" style="appearance: none; -webkit-appearance: none; margin: 0; width: 44px; height: 26px; border-radius: 13px; background: {{sw.track}}; cursor: pointer">
+<span aria-hidden="true" style="position: absolute; top: 3px; left: {{sw.x}}px; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); pointer-events: none"></span>
+</span>
+Automatikus továbblépés helyes válasz után
+</label>
+</div>
+
+<section style="display: flex; flex-direction: column; gap: 4px; padding: 4px 16px 16px; border-radius: 20px; background: {{t.card}}; border: 1px solid {{t.line}}">
+<h2 style="margin: 0">
+<button type="button" onClick="{{toggleWords}}" aria-expanded="{{wordsOpen}}" style="width: 100%; min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0; border: none; background: none; color: {{t.ink}}; font-family: inherit; font-size: 17px; font-weight: 700; text-align: left; cursor: pointer">
+<span style="flex: 1">Gyakorolandó szavak</span>
+<span style="min-width: 28px; height: 28px; padding: 0 8px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: {{t.sub}}; color: {{t.ink2}}; font-size: 14px; font-weight: 700">{{wordCount}}</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{wordsRot}}deg); color: {{t.ink2}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+</h2>
+<sc-if value="{{showWords}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{noWords}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 15px; color: {{t.ink2}}">Nincs elhibázott szó.</p>
+</sc-if>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{words}}" as="w" hint-placeholder-count="6">
+<li style="display: flex">
+<button type="button" aria-label="{{w.aria}}" style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; box-sizing: border-box; border-radius: 999px; border: 1px solid {{w.line}}; background: {{w.bg}}; color: {{t.ink}}; font-family: 'Literata', Georgia, serif; font-size: 17px; font-weight: 600; cursor: pointer">
+<sc-if value="{{w.green}}" hint-placeholder-val="{{ false }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{t.sText}}"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></sc-if>
+<sc-if value="{{w.backlog}}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: {{t.eLine}}"></span></sc-if>
+{{w.w}}
+</button>
+</li>
+</sc-for>
+</ul>
+<p style="margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; font-size: 13px; color: {{t.ink2}}">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: {{t.eLine}}"></span>gyakorolandó</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{t.sText}}"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>majdnem megvan</span>
+<span>Koppints egy szóra, ha már biztosan tudod.</span>
+</p>
+</div>
+</sc-if>
+</section>
+
+<section aria-labelledby="eredmeny" style="display: flex; flex-direction: column; gap: 14px; padding: 18px 16px; border-radius: 20px; background: {{t.card}}; border: 1px solid {{t.line}}">
+<h2 id="eredmeny" style="margin: 0; font-size: 17px; font-weight: 700; color: {{t.ink}}">Eredmény</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-variant-numeric: tabular-nums">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 28px; font-weight: 700; line-height: 1.1; color: {{t.pText}}">{{score.c}}</span>
+<span style="font-size: 13px; color: {{t.ink2}}">helyes</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 28px; font-weight: 700; line-height: 1.1; color: {{t.ink}}">{{score.t}}</span>
+<span style="font-size: 13px; color: {{t.ink2}}">összes</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 28px; font-weight: 700; line-height: 1.1; color: {{t.sText}}">{{score.pct}}%</span>
+<span style="font-size: 13px; color: {{t.ink2}}">pontosság</span>
+</div>
+</div>
+<div role="progressbar" aria-label="Pontosság" aria-valuenow="{{score.pct}}" aria-valuemin="0" aria-valuemax="100" style="height: 8px; border-radius: 4px; overflow: hidden; background: {{t.track}}">
+<div style="height: 100%; width: {{score.pct}}%; border-radius: 4px; background: {{t.sLine}}"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px; padding-top: 14px; border-top: 1px solid {{t.line}}">
+<h3 style="margin: 0; font-size: 15px; font-weight: 700; color: {{t.ink}}">Legjobb eredmények</h3>
+<ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{top}}" as="r" hint-placeholder-count="3">
+<li style="display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 12px; background: {{r.bg}}">
+<span style="font-size: 12px; font-weight: 600; color: {{t.ink2}}">{{r.rank}}. hely</span>
+<span style="font-size: 18px; font-weight: 700; color: {{t.ink}}; font-variant-numeric: tabular-nums">{{r.pts}} pont</span>
+<sc-if value="{{r.current}}" hint-placeholder-val="{{ false }}"><span style="font-size: 12px; font-weight: 600; color: {{t.pText}}">ez a kör</span></sc-if>
+</li>
+</sc-for>
+</ol>
+</div>
+<p style="margin: 0; font-size: 13px; color: {{t.ink2}}">16 285 szópár</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 4px; padding: 4px 16px 16px; border-radius: 20px; background: {{t.card}}; border: 1px solid {{t.line}}">
+<h2 style="margin: 0">
+<button type="button" onClick="{{toggleHelp}}" aria-expanded="{{helpOpen}}" style="width: 100%; min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0; border: none; background: none; color: {{t.ink}}; font-family: inherit; font-size: 17px; font-weight: 700; text-align: left; cursor: pointer">
+<span style="flex: 1">Hogyan működik?</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: rotate({{helpRot}}deg); color: {{t.ink2}}"><path d="M6 9l6 6 6-6"></path></svg>
+</button>
+</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.5; color: {{t.ink2}}">Két írásmód közül választasz: az egyik helyes, a másik hibás. A választásod után rögtön látod, hogy eltaláltad-e.</p>
+<sc-if value="{{showHelp}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px; padding-top: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 10px; background: {{t.sBg}}; color: {{t.sText}}; font-size: 14px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Helyes: <span style="font-family: 'Literata', Georgia, serif; font-size: 16px; color: {{t.ink}}">folyó</span></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 10px; background: {{t.eBg}}; color: {{t.eText}}; font-size: 14px; font-weight: 600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Hibás: <span style="font-family: 'Literata', Georgia, serif; font-size: 16px; color: {{t.ink}}; text-decoration-line: line-through">fojó</span></span>
+</div>
+<ul style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5; color: {{t.ink2}}">
+<li>A <strong style="color: {{t.ink}}">j</strong> és az <strong style="color: {{t.ink}}">ly</strong> ma ugyanazt a hangot jelöli. Hogy melyiket írjuk, azt a szó eredete és a hagyomány dönti el, nem kiejtési szabály, ezért a szavakat meg kell tanulni.</li>
+<li>Segít a szócsalád: a tőszó írásmódja a származékokban is megmarad (<em>hely → helyes, helyiség</em>; <em>száj → szájas</em>).</li>
+<li>Az elhibázott szavak gyakrabban visszatérnek, amíg meg nem tanulod őket.</li>
+</ul>
+</div>
+</sc-if>
+</section>
+</main>
+
+<footer style="margin-top: auto; padding: 24px 16px 32px; text-align: center; font-size: 13px; color: {{t.ink2}}">J vagy LY? © 2026</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Állapot"},"scenario":{"editor":"enum","options":["unanswered","unanswered2","correct","cancelled","wrong","wrong2","both","both2"],"default":"unanswered","section":"Állapot"},"$preview":{"width":390,"height":1600}}'>
+class Component extends DCLogic {
+  palette() {
+    if ((this.props.theme ?? 'light') === 'dark') {
+      return { bg: '#11151D', card: '#1A1F2A', sub: '#242B38', line: '#313949', edge: '#0D1017', ink: '#ECEEF3', ink2: '#A4ABB9', p: '#3F60CC', pText: '#9DB3F5', pTint: '#1E2A4D', onP: '#FFFFFF', sBg: '#0F2E24', sLine: '#3DBE8C', sText: '#7EDDB5', eBg: '#3A1D12', eLine: '#F08250', eText: '#F7AB87', onBadge: '#11151D', track: '#313949', swOff: '#5B6475', shadow: '0 1px 2px rgba(0, 0, 0, 0.35)' };
+    }
+    return { bg: '#F5F2EA', card: '#FFFDF9', sub: '#EFEBE1', line: '#E2DCCD', edge: '#D3CBB8', ink: '#1C2230', ink2: '#565D6B', p: '#2C4AAE', pText: '#2C4AAE', pTint: '#EEF2FB', onP: '#FFFFFF', sBg: '#E4F3EC', sLine: '#1E8A63', sText: '#136B4F', eBg: '#FCEDE6', eLine: '#C4501F', eText: '#A13C14', onBadge: '#FFFFFF', track: '#E2DCCD', swOff: '#8A8F99', shadow: '0 1px 2px rgba(28, 34, 48, 0.05), 0 10px 28px rgba(28, 34, 48, 0.07)' };
+  }
+  scenarios() {
+    return {
+      unanswered: { pair: { c: 'ablakmélyedés', w: 'ablakméjedés' }, opts: ['ablakméjedés', 'ablakmélyedés'], picked: null },
+      unanswered2: { pair: { c: 'tolvaj', w: 'tolvaly' }, opts: ['tolvaly', 'tolvaj'], picked: null },
+      correct: { pair: { c: 'muszáj', w: 'muszály' }, opts: ['muszály', 'muszáj'], picked: 'muszáj', remaining: 2600 },
+      cancelled: { pair: { c: 'bagoly', w: 'bagoj' }, opts: ['bagoly', 'bagoj'], picked: 'bagoly', cancelled: true },
+      wrong: { pair: { c: 'mélység', w: 'méjség' }, opts: ['mélység', 'méjség'], picked: 'méjség' },
+      wrong2: { pair: { c: 'kályha', w: 'kájha' }, opts: ['kájha', 'kályha'], picked: 'kájha' },
+      both: { pair: { c: 'hej', w: 'hely', both: true }, opts: ['hely', 'hej'], picked: 'hely' },
+      both2: { pair: { c: 'fojtat', w: 'folytat', both: true }, opts: ['folytat', 'fojtat'], picked: 'fojtat' }
+    };
+  }
+  deck() {
+    return [
+      { c: 'gólya', w: 'gója' }, { c: 'tolvaj', w: 'tolvaly' }, { c: 'kályha', w: 'kájha' },
+      { c: 'hej', w: 'hely', both: true }, { c: 'karvaly', w: 'karvaj' }, { c: 'fejsze', w: 'felysze' },
+      { c: 'osztály', w: 'osztáj' }, { c: 'ablakmélyedés', w: 'ablakméjedés' }
+    ];
+  }
+  seedWords() {
+    return [
+      { w: 'mélység', green: false }, { w: 'gólya', green: true }, { w: 'zsámoly', green: false },
+      { w: 'fejsze', green: false }, { w: 'pehely', green: true }, { w: 'karvaly', green: false }, { w: 'gerely', green: true }
+    ];
+  }
+  ui(key, fallback) {
+    var s = this.state || {};
+    return s[key] === undefined ? fallback : s[key];
+  }
+  round() {
+    var s = this.state || {};
+    if (s.round) return s.round;
+    var all = this.scenarios();
+    var sc = all[this.props.scenario ?? 'unanswered'] || all.unanswered;
+    var ok = sc.picked !== null && (sc.pair.both || sc.picked === sc.pair.c);
+    return {
+      pair: sc.pair, opts: sc.opts, picked: sc.picked,
+      cancelled: !!sc.cancelled, remaining: sc.remaining ?? null,
+      correct: 11 + (ok ? 1 : 0), total: 14 + (sc.picked !== null ? 1 : 0),
+      words: this.seedWords(), deckIdx: 0
+    };
+  }
+  setRound(patch) {
+    this.setState({ round: Object.assign({}, this.round(), patch) });
+  }
+  clearTimer() {
+    if (this.timer) { clearInterval(this.timer); this.timer = null; }
+  }
+  componentWillUnmount() { this.clearTimer(); }
+  pick(opt) {
+    var r = this.round();
+    if (r.picked !== null) return;
+    var ok = !!r.pair.both || opt === r.pair.c;
+    var words = r.words;
+    if (!ok && !words.some(function (x) { return x.w === r.pair.c; })) words = words.concat([{ w: r.pair.c, green: false }]);
+    var auto = this.ui('auto', true);
+    this.setRound({ picked: opt, cancelled: false, remaining: ok && auto ? 5000 : null, correct: r.correct + (ok ? 1 : 0), total: r.total + 1, words: words });
+    if (ok && auto) this.startTimer();
+  }
+  startTimer() {
+    var self = this;
+    this.clearTimer();
+    var end = Date.now() + 5000;
+    this.timer = setInterval(function () {
+      var left = Math.max(0, end - Date.now());
+      if (left === 0) self.next(); else self.setRound({ remaining: left });
+    }, 100);
+  }
+  cancel() {
+    if (!this.timer) return;
+    this.clearTimer();
+    this.setRound({ cancelled: true, remaining: null });
+  }
+  next() {
+    var r = this.round();
+    if (r.picked === null) return;
+    this.clearTimer();
+    var d = this.deck();
+    var i = (r.deckIdx || 0) % d.length;
+    var p = d[i];
+    this.setRound({ pair: p, opts: Math.random() < 0.5 ? [p.c, p.w] : [p.w, p.c], picked: null, cancelled: false, remaining: null, deckIdx: i + 1 });
+  }
+  wordSize(len) {
+    if (len <= 9) return 44;
+    if (len <= 12) return 34;
+    if (len <= 14) return 30;
+    return 28;
+  }
+  renderVals() {
+    var self = this;
+    var t = this.palette();
+    var r = this.round();
+    var answered = r.picked !== null;
+    var ok = answered && (!!r.pair.both || r.picked === r.pair.c);
+    var size = this.wordSize(Math.max(r.opts[0].length, r.opts[1].length));
+    var opts = r.opts.map(function (text, i) {
+      var isRight = answered && (text === r.pair.c || !!r.pair.both);
+      var isPicked = answered && text === r.picked;
+      var isWrong = isPicked && !isRight;
+      var o = { text: text, size: size, aria: (i + 1) + '. választás: ' + text, right: isRight, wrong: isWrong, deco: 'none', cursor: answered ? 'default' : 'pointer', pick: function () { self.pick(text); } };
+      if (!answered) { o.bg = t.card; o.line = t.line; o.color = t.ink; }
+      else if (isRight) { o.bg = t.sBg; o.line = t.sLine; o.color = t.ink; o.label = isPicked ? 'Helyes · a te válaszod' : 'Helyes'; }
+      else if (isWrong) { o.bg = t.eBg; o.line = t.eLine; o.color = t.ink; o.deco = 'line-through'; o.label = 'Hibás · a te válaszod'; }
+      else { o.bg = t.card; o.line = t.line; o.color = t.ink2; }
+      return o;
+    });
+    var both = answered && !!r.pair.both;
+    var fb = {
+      ok: ok, bad: answered && !ok, both: both, single: answered && !both,
+      title: both ? 'Mindkettő helyes! :)' : ok ? 'Helyes!' : 'Nem jó.',
+      badgeBg: ok ? t.sLine : t.eLine
+    };
+    var linkWords = both ? [r.pair.c, r.pair.w] : [r.pair.c];
+    var links = linkWords.map(function (w) { return { w: w, href: 'https://www.google.com/search?q=' + encodeURIComponent('define ' + w) }; });
+    var countdownOn = ok && r.remaining !== null;
+    var cd = { on: countdownOn, stopped: ok && r.cancelled, secs: countdownOn ? Math.ceil(r.remaining / 1000) : 0, pct: countdownOn ? Math.round(r.remaining / 50) : 0 };
+    var auto = this.ui('auto', true);
+    var showWords = this.ui('showWords', true);
+    var showHelp = this.ui('showHelp', false);
+    var words = r.words.map(function (x) {
+      return { w: x.w, green: x.green, backlog: !x.green, bg: x.green ? t.sBg : t.card, line: x.green ? t.sLine : t.line, aria: x.w + (x.green ? ', majdnem megtanult' : ', gyakorolandó') + '. Eltávolítás a listáról' };
+    });
+    var pct = r.total > 0 ? Math.round(r.correct / r.total * 100) : 0;
+    var top = [{ pts: 24 }, { pts: 19 }, { pts: 9 }, { pts: r.correct, current: true }]
+      .sort(function (a, b) { return b.pts - a.pts; }).slice(0, 3)
+      .map(function (x, i) { return { rank: i + 1, pts: x.pts, current: !!x.current, bg: x.current ? t.pTint : t.sub }; });
+    return {
+      t: t, pair: r.pair, opts: opts, answered: answered, notAnswered: !answered,
+      fb: fb, links: links, cd: cd,
+      nb: answered ? { bg: t.p, fg: t.onP, cursor: 'pointer' } : { bg: t.sub, fg: t.ink2, cursor: 'not-allowed' },
+      auto: auto, sw: { track: auto ? t.p : t.swOff, x: auto ? 21 : 3 },
+      showWords: showWords, wordsOpen: showWords ? 'true' : 'false', wordsRot: showWords ? 180 : 0,
+      showHelp: showHelp, helpOpen: showHelp ? 'true' : 'false', helpRot: showHelp ? 180 : 0,
+      words: words, wordCount: words.length, noWords: words.length === 0,
+      score: { c: r.correct, t: r.total, pct: pct, aria: r.correct + ' helyes válasz ' + r.total + ' kérdésből' },
+      top: top,
+      rootDown: function () { self.cancel(); },
+      next: function () { self.next(); },
+      toggleAuto: function () { var on = !self.ui('auto', true); self.setState({ auto: on }); if (!on) self.cancel(); },
+      toggleWords: function () { self.setState({ showWords: !self.ui('showWords', true) }); },
+      toggleHelp: function () { self.setState({ showHelp: !self.ui('showHelp', false) }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

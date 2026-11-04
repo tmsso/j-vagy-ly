@@ -1,0 +1,242 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-04T14:29:20Z"
+  },
+  "title": "J vagy LY? — design pass 01",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Identity.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 1080,
+      "title": "Icon, wordmark & tokens"
+    },
+    "Main.dc.html": {
+      "x": 0,
+      "y": 1480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · light · unanswered (13-letter word)",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(44,74,174,0.07)"
+        }
+      ]
+    },
+    "PhoneCorrect.dc.html": {
+      "x": 470,
+      "y": 1480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · light · correct, countdown running",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(44,74,174,0.07)"
+        }
+      ]
+    },
+    "PhoneWrong.dc.html": {
+      "x": 940,
+      "y": 1480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · light · wrong",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(44,74,174,0.07)"
+        }
+      ]
+    },
+    "PhoneBoth.dc.html": {
+      "x": 1410,
+      "y": 1480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · light · both correct",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(44,74,174,0.07)"
+        }
+      ]
+    },
+    "PhoneDark.dc.html": {
+      "x": 0,
+      "y": 3480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · dark · unanswered",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(157,179,245,0.08)"
+        }
+      ]
+    },
+    "PhoneDarkCancelled.dc.html": {
+      "x": 470,
+      "y": 3480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · dark · correct, countdown cancelled",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(157,179,245,0.08)"
+        }
+      ]
+    },
+    "PhoneDarkWrong.dc.html": {
+      "x": 940,
+      "y": 3480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · dark · wrong",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(157,179,245,0.08)"
+        }
+      ]
+    },
+    "PhoneDarkBoth.dc.html": {
+      "x": 1410,
+      "y": 3480,
+      "w": 390,
+      "h": 1600,
+      "title": "Phone · dark · both correct",
+      "is_interactive": true,
+      "guides": [
+        {
+          "kind": "rows",
+          "count": 1,
+          "size": 844,
+          "align": "start",
+          "color": "rgba(157,179,245,0.08)"
+        }
+      ]
+    },
+    "Desktop.dc.html": {
+      "x": 0,
+      "y": 5480,
+      "w": 1280,
+      "h": 1260,
+      "title": "Desktop · light · correct, countdown running",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "DesktopDark.dc.html": {
+      "x": 1360,
+      "y": 5480,
+      "w": 1280,
+      "h": 1260,
+      "title": "Desktop · dark · wrong",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "States.dc.html": {
+      "x": 0,
+      "y": 7140,
+      "w": 1284,
+      "h": 904,
+      "title": "Small states · light"
+    },
+    "StatesDark.dc.html": {
+      "x": 1364,
+      "y": 7140,
+      "w": 1284,
+      "h": 904,
+      "title": "Small states · dark"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Identity.dc.html",
+    "PhoneCorrect.dc.html",
+    "PhoneWrong.dc.html",
+    "PhoneBoth.dc.html",
+    "PhoneDark.dc.html",
+    "PhoneDarkCancelled.dc.html",
+    "PhoneDarkWrong.dc.html",
+    "PhoneDarkBoth.dc.html",
+    "Desktop.dc.html",
+    "DesktopDark.dc.html",
+    "States.dc.html",
+    "StatesDark.dc.html"
+  ],
+  "notes": {
+    "tIdentity": {
+      "x": 0,
+      "y": -300,
+      "text": "Identity & tokens",
+      "kind": "title1",
+      "maxW": 1280
+    },
+    "tPhoneLight": {
+      "x": 0,
+      "y": 1180,
+      "text": "Phone · light",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "tPhoneDark": {
+      "x": 0,
+      "y": 3180,
+      "text": "Phone · dark",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "tDesktop": {
+      "x": 0,
+      "y": 5180,
+      "text": "Desktop",
+      "kind": "title1",
+      "maxW": 2640
+    },
+    "tStates": {
+      "x": 0,
+      "y": 6840,
+      "text": "Small states & dialogs",
+      "kind": "title1",
+      "maxW": 2648
+    }
+  },
+  "designSystems": []
+}
