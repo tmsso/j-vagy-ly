@@ -48,3 +48,8 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 ## 2026-11-04 — Follow-up fix (#4)
 
 - A regression from #2, found in final review: after a mouse click left focus on a control, digit and arrow shortcuts were ignored, and after confirming "Új játék" a later Enter re-opened the dialog. Now only Space/Enter defer to a focused, enabled control, and focus is released after a dialog *confirm*. A click on the dialog's own padding no longer counts as a backdrop click.
+
+## 2026-11-04 — Custom domain
+
+- Vercel project renamed to `j-vagy-ly` (owner). `j-vagy-ly.tmsso.com` attached; DNS-only CNAME added at Cloudflare (owner). Let's Encrypt certificate issued, Vercel config check clean.
+- Verified on the new host: security headers, `sw.js` `no-cache`, manifest, SW activates, offline reload playable, keyboard/focus checks, no CSP errors. `j-or-ly.vercel.app` keeps serving (D5: no redirect).

@@ -2,7 +2,7 @@
 
 A small web game for practising one of Hungarian spelling's classic traps: each round shows two spellings that differ only in `j` vs `ly` (e.g. `folyó` / `fojó`), and you pick the correct one. Words you miss come back more often until you master them.
 
-**Live:** [j-or-ly.vercel.app](https://j-or-ly.vercel.app) (the Vercel project still carries the repo's old name)
+**Live:** [j-vagy-ly.tmsso.com](https://j-vagy-ly.tmsso.com) (the original [j-or-ly.vercel.app](https://j-or-ly.vercel.app) keeps serving the same app)
 
 ## Features
 

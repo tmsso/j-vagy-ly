@@ -20,7 +20,7 @@ Loose backlog. Nothing here is scheduled; `ROADMAP.md` is the plan. Pick things 
 
 ## Technical
 
-- Rename the Vercel project and domain to `j-vagy-ly` (owner, dashboard).
+- **Progress transfer between hosts** (export/import code or link) — prerequisite for ever redirecting `j-or-ly.vercel.app` to `j-vagy-ly.tmsso.com` (ROADMAP D5).
 - An end-to-end smoke test (Playwright) in CI, once the app is worth the extra CI minutes.
 - Lighthouse budget check in CI.
 - Tailwind 4 / TypeScript 7 / Jest 30 migrations: majors, not needed for hardening; revisit with the design pass.

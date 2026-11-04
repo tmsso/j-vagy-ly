@@ -14,7 +14,7 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 
 | Phase | Name | Code | Accept line | Gap to Accept |
 | --- | --- | --- | --- | --- |
-| 0 | MVP game on Vercel | delivered | ✅ met | live at `j-or-ly.vercel.app` since 2026-05 |
+| 0 | MVP game on Vercel | delivered | ✅ met | live at `j-vagy-ly.tmsso.com` (and `j-or-ly.vercel.app`) |
 | 1 | Hardening | delivered (#2) | ✅ met | — (headers, full round, mastery confetti verified on production) |
 | 2 | PWA-ready | delivered (#3) | ⏳ device | (a) ✅ production offline check met 2026-11-04; (b) owner phone install |
 | 3 | Design pass | brief ready | — | owner runs the pass from `docs/design/BRIEF.md` |
@@ -24,7 +24,8 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 - **D1 — licence: MIT.** Replace the GPL-3.0 `LICENSE` with MIT text, matching `package.json` and what the README always claimed.
 - **D2 — push autonomy for the hardening/PWA batch: push, verify on the Vercel preview, merge, re-verify production.**
 - **D3 — legacy cleanup: delete** the Streamlit/Dash-era files and the two fully merged remote branches (`codex/hungarian-word-practice`, `vercel/react-server-components-cve-vu-hlh31x`).
-- **D4 — naming: `j-vagy-ly` everywhere in the repo.** The Vercel project/domain rename is an owner dashboard step (see "Owner steps"). Until then the live URL stays `j-or-ly.vercel.app`.
+- **D4 — naming: `j-vagy-ly` everywhere in the repo.** Done 2026-11-04: Vercel project renamed (owner), custom domain **`j-vagy-ly.tmsso.com`** attached (DNS-only CNAME at Cloudflare to the project's `vercel-dns-017.com` target, so Vercel can issue the certificate).
+- **D5 — no redirect from `j-or-ly.vercel.app` (2026-11-04).** Both hosts serve the same deployment. Saved progress (`localStorage`), the service-worker cache and home-screen installs are bound to the exact origin, so a redirect would silently wipe players' progress and break existing installs. A redirect would need a progress-transfer step first (e.g. an export/import link); see IDEAS.
 
 ## Phase 0 — MVP game on Vercel (delivered)
 
@@ -78,11 +79,10 @@ Input: `docs/design/BRIEF.md` (written in Phase 2). Expected outputs: an app ico
 
 ## Execution order from here
 
-1. **Owner device check** (Phase 2 b, ~5 min): open `j-or-ly.vercel.app` on a phone, add it to the home screen (Android Chrome: install prompt or menu → "Install app"; iOS Safari: Share → "Add to Home Screen"), switch on aeroplane mode, open it from the icon, and play a round.
+1. **Owner device check** (Phase 2 b, ~5 min): open **`j-vagy-ly.tmsso.com`** on a phone (installs and progress are per-address; install from the address you'll keep), add it to the home screen (Android Chrome: install prompt or menu → "Install app"; iOS Safari: Share → "Add to Home Screen"), switch on aeroplane mode, open it from the icon, and play a round.
 2. **Design pass** (Phase 3) from `docs/design/BRIEF.md`, then an implementation batch.
 3. Opportunistic: `IDEAS.md` content-quality items (word-initial `ly` giveaways, dictionary curation).
 
 ## Owner steps (no code)
 
-- Rename the Vercel project and/or add a `j-vagy-ly` domain (D4), then update the live URL in `README.md`.
 - The Phase 2 device check.
