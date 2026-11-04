@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>J vagy LY? – kisebb állapotok</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Literata:opsz,wght@7..72,600;7..72,700&amp;display=swap">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1284px; height: 904px; box-sizing: border-box; padding: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 32px; background: {{t.canvas}}; color: {{t.ink}}; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased">
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Betöltés</figcaption>
+<div aria-busy="true" style="height: 360px; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<div style="display: flex; align-items: center; min-height: 56px; padding: 0 16px; border-bottom: 1px solid {{t.line}}; font-family: 'Literata', Georgia, serif; font-size: 20px; font-weight: 700">J vagy <span style="color: {{t.pText}}">&#160;LY</span>?</div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 20px 16px">
+<div style="height: 22px; width: 140px; align-self: center; border-radius: 6px; background: {{t.sub}}"></div>
+<div style="height: 96px; border-radius: 18px; background: {{t.sub}}"></div>
+<div style="height: 96px; border-radius: 18px; background: {{t.sub}}"></div>
+<p style="margin: 8px 0 0; text-align: center; font-size: 15px; color: {{t.ink2}}">Betöltés…</p>
+</div>
+</div>
+</figure>
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Betöltési hiba / offline, gyorsítótár nélkül</figcaption>
+<div style="height: 360px; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<div style="display: flex; align-items: center; min-height: 56px; padding: 0 16px; border-bottom: 1px solid {{t.line}}; font-family: 'Literata', Georgia, serif; font-size: 20px; font-weight: 700">J vagy <span style="color: {{t.pText}}">&#160;LY</span>?</div>
+<div role="alert" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px 24px; text-align: center">
+<span aria-hidden="true" style="width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: {{t.eBg}}; color: {{t.eText}}">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"></path><path d="M17.5 17.5H7a4.5 4.5 0 0 1-1.2-8.84"></path><path d="M9.6 5.6A6 6 0 0 1 18.9 10a4 4 0 0 1 1.9 6.4"></path></svg>
+</span>
+<h2 style="margin: 0; font-size: 18px; font-weight: 700; color: {{t.ink}}">A játék betöltése nem sikerült.</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{t.ink2}}">Ellenőrizd az internetkapcsolatot, majd töltsd újra az oldalt.</p>
+<button type="button" style="min-height: 48px; padding: 0 24px; border: none; border-radius: 14px; background: {{t.p}}; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer">Újratöltés</button>
+<p style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; color: {{t.ink2}}">(Failed to fetch)</p>
+</div>
+</div>
+</figure>
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Üres „Gyakorolandó szavak” lista</figcaption>
+<div style="height: 360px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; padding: 16px; border-radius: 20px; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<section style="display: flex; flex-direction: column; gap: 6px; padding: 4px 16px 18px; border-radius: 20px; background: {{t.card}}; border: 1px solid {{t.line}}">
+<h2 style="margin: 0">
+<button type="button" aria-expanded="true" style="width: 100%; min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 0; border: none; background: none; color: {{t.ink}}; font-family: inherit; font-size: 17px; font-weight: 700; text-align: left">
+<span style="flex: 1">Gyakorolandó szavak</span>
+<span style="min-width: 28px; height: 28px; padding: 0 8px; box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: {{t.sub}}; color: {{t.ink2}}; font-size: 14px; font-weight: 700">0</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{t.ink2}}"><path d="M6 15l6-6 6 6"></path></svg>
+</button>
+</h2>
+<p style="margin: 0; font-size: 16px; font-weight: 600; color: {{t.ink}}">Nincs elhibázott szó.</p>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: {{t.ink2}}">A rossz válaszaid ide kerülnek, és gyakrabban visszatérnek, amíg meg nem tanulod őket.</p>
+</section>
+</div>
+</figure>
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Párbeszédablak: új játék (fókusz a „Mégse” gombon)</figcaption>
+<div style="position: relative; height: 360px; border-radius: 20px; overflow: hidden; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<div style="position: absolute; inset: 72px 16px auto; height: 200px; border-radius: 24px; background: {{t.card}}"></div>
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: {{t.backdrop}}">
+<div role="dialog" aria-modal="true" aria-labelledby="dlg-uj" style="width: 100%; max-width: 332px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 22px; background: {{t.card}}; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25)">
+<h3 id="dlg-uj" style="margin: 0; font-size: 20px; font-weight: 700; color: {{t.ink}}">Új játék?</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{t.ink2}}">A jelenlegi kör véget ér, a pontszámod bekerül a toplistába. Kezdhetjük?</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 8px">
+<button type="button" style="min-height: 48px; border: none; border-radius: 14px; background: {{t.sub}}; color: {{t.ink}}; font-family: inherit; font-size: 16px; font-weight: 700; box-shadow: 0 0 0 3px {{t.card}}, 0 0 0 6px {{t.ring}}">Mégse</button>
+<button type="button" style="min-height: 48px; border: none; border-radius: 14px; background: {{t.p}}; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 700">Új játék</button>
+</div>
+</div>
+</div>
+</div>
+</figure>
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Párbeszédablak: szó eltávolítása</figcaption>
+<div style="position: relative; height: 360px; border-radius: 20px; overflow: hidden; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<div style="position: absolute; inset: 72px 16px auto; height: 200px; border-radius: 24px; background: {{t.card}}"></div>
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: {{t.backdrop}}">
+<div role="dialog" aria-modal="true" aria-labelledby="dlg-torles" style="width: 100%; max-width: 332px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 22px; background: {{t.card}}; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25)">
+<h3 id="dlg-torles" style="margin: 0; font-size: 20px; font-weight: 700; color: {{t.ink}}">„<span style="font-family: 'Literata', Georgia, serif">mélység</span>” eltávolítása</h3>
+<p style="margin: 0; font-size: 15px; line-height: 1.45; color: {{t.ink2}}">Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 8px">
+<button type="button" style="min-height: 48px; border: none; border-radius: 14px; background: {{t.sub}}; color: {{t.ink}}; font-family: inherit; font-size: 16px; font-weight: 700; box-shadow: 0 0 0 3px {{t.card}}, 0 0 0 6px {{t.ring}}">Mégse</button>
+<button type="button" style="min-height: 48px; border: none; border-radius: 14px; background: {{t.eLine}}; color: {{t.onDanger}}; font-family: inherit; font-size: 16px; font-weight: 700">Eltávolítás</button>
+</div>
+</div>
+</div>
+</div>
+</figure>
+
+<figure style="margin: 0; display: flex; flex-direction: column; gap: 12px">
+<figcaption style="font-size: 13px; font-weight: 600; color: {{t.ink2}}">Billentyűzetfókusz (:focus-visible)</figcaption>
+<div style="height: 360px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box; padding: 24px 20px; border-radius: 20px; background: {{t.bg}}; border: 1px solid {{t.line}}">
+<button type="button" style="min-height: 112px; display: flex; align-items: center; justify-content: center; border-radius: 18px; border: 2px solid {{t.line}}; border-bottom-width: 5px; background: {{t.card}}; color: {{t.ink}}; font-family: 'Literata', Georgia, serif; font-size: 44px; font-weight: 700; box-shadow: 0 0 0 3px {{t.bg}}, 0 0 0 6px {{t.ring}}">gólya</button>
+<button type="button" style="min-height: 56px; border: none; border-radius: 16px; background: {{t.p}}; color: #FFFFFF; font-family: inherit; font-size: 18px; font-weight: 700; box-shadow: 0 0 0 3px {{t.bg}}, 0 0 0 6px {{t.ring}}">Következő szó</button>
+<a href="#fokusz" style="align-self: flex-start; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; box-sizing: border-box; border-radius: 12px; background: {{t.card}}; border: 1px solid {{t.line}}; color: {{t.pText}}; font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: 0 0 0 3px {{t.bg}}, 0 0 0 6px {{t.ring}}">Mi az, hogy „gólya”?</a>
+</div>
+</figure>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":1284,"height":904}}'>
+class Component extends DCLogic {
+  renderVals() {
+    if ((this.props.theme ?? 'light') === 'dark') {
+      return { t: { canvas: '#0A0D13', bg: '#11151D', card: '#1A1F2A', sub: '#242B38', line: '#313949', ink: '#ECEEF3', ink2: '#A4ABB9', p: '#3F60CC', pText: '#9DB3F5', eBg: '#3A1D12', eLine: '#F08250', eText: '#F7AB87', onDanger: '#11151D', ring: '#9DB3F5', backdrop: 'rgba(5, 7, 10, 0.7)' } };
+    }
+    return { t: { canvas: '#E8E3D7', bg: '#F5F2EA', card: '#FFFDF9', sub: '#EFEBE1', line: '#E2DCCD', ink: '#1C2230', ink2: '#565D6B', p: '#2C4AAE', pText: '#2C4AAE', eBg: '#FCEDE6', eLine: '#C4501F', eText: '#A13C14', onDanger: '#FFFFFF', ring: '#2C4AAE', backdrop: 'rgba(28, 34, 48, 0.5)' } };
+  }
+}
+</script>
+</body>
+</html>
