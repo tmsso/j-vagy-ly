@@ -1,5 +1,8 @@
 import type { Config } from 'tailwindcss'
 
+// Colours point at the CSS variables in app/globals.css, which flip for dark mode.
+const token = (name: string) => `rgb(var(--${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -9,24 +12,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-        },
-        success: {
-          500: '#10b981',
-          600: '#059669',
-        },
-        error: {
-          500: '#ef4444',
-          600: '#dc2626',
-        }
+        paper: token('paper'),
+        card: token('card'),
+        subtle: token('subtle'),
+        line: token('line'),
+        ink: { DEFAULT: token('ink'), muted: token('ink-muted') },
+        primary: { 50: token('primary-50'), 600: token('primary-600'), text: token('primary-text') },
+        success: { 50: token('success-50'), 600: token('success-600'), 700: token('success-700') },
+        error: { 50: token('error-50'), 600: token('error-600'), 700: token('error-700') },
+        'on-feedback': token('on-feedback'),
+        'switch-off': token('switch-off'),
+      },
+      boxShadow: {
+        card: 'var(--shadow-card)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        // next/font registers the fonts under generated names and exposes them
+        // as these CSS variables (app/layout.tsx); naming 'Inter' directly would miss.
+        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        serif: ['var(--font-literata)', 'Georgia', 'serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',

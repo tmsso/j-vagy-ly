@@ -1,5 +1,6 @@
 import { JLyPair, pairKey } from '../app/utils/pairs';
-import { parseCurrentSession, parseFailedWords, parseHighScores, topScores } from '../app/utils/storage';
+import { parseCurrentSession, parseFailedWords, parseHighScores, rankScores, topScores } from '../app/utils/storage';
+import { wordSizeStep } from '../app/utils/display';
 
 const folyo: JLyPair = { correct: 'folyó', wrong: 'fojó' };
 const jaj1: JLyPair = { correct: 'jaj', wrong: 'lyaj' };
@@ -44,6 +45,19 @@ describe('high scores', () => {
     expect(topScores([0])).toEqual([]);
   });
 
+  it('ranks the running session among the saved scores and marks it', () => {
+    expect(rankScores([24, 19, 9], 12)).toEqual([
+      { score: 24, isCurrent: false },
+      { score: 19, isCurrent: false },
+      { score: 12, isCurrent: true },
+    ]);
+    // Not in the top three yet, or still zero: not listed.
+    expect(rankScores([24, 19, 9], 5).some((e) => e.isCurrent)).toBe(false);
+    expect(rankScores([], 0)).toEqual([]);
+    // A tie keeps the finished session ahead.
+    expect(rankScores([9], 9)).toEqual([{ score: 9, isCurrent: false }, { score: 9, isCurrent: true }]);
+  });
+
   it('parses defensively', () => {
     expect(parseHighScores('[5, "7", 2.5, -1, 3, 9, 1]')).toEqual([9, 5, 3]);
     expect(parseHighScores('{"a":1}')).toEqual([]);
@@ -55,5 +69,11 @@ describe('high scores', () => {
     expect(parseCurrentSession('{"score":"14"}')).toBe(0);
     expect(parseCurrentSession('oops')).toBe(0);
     expect(parseCurrentSession(null)).toBe(0);
+  });
+});
+
+describe('wordSizeStep', () => {
+  it('steps the answer type size down with the longer option', () => {
+    expect([3, 9, 10, 12, 13, 14, 15, 20].map(wordSizeStep)).toEqual([0, 0, 1, 1, 2, 2, 3, 3]);
   });
 });

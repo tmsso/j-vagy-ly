@@ -56,4 +56,15 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 
 ## 2026-11-04 — Design handoff 01 committed
 
-- Design pass 01 exported from the Claude Design canvas into `docs/design/handoff-01/`: icon master and favicon SVGs, the canvas index and all 13 artboard sources, plus a README with the token, type and manifest decisions. Not implemented yet. That is the next batch.
+- Design pass 01 exported from the Claude Design canvas into `docs/design/handoff-01/`: icon master and favicon SVGs, the canvas index and all 13 artboard sources, plus a README with the token, type and manifest decisions. Implemented in the same PR (next entry).
+
+## 2026-11-04 — Design pass 01 implemented (Phase 3)
+
+- **Identity:** new icon master and favicon (`design/icon.svg`, `design/favicon.svg`); `scripts/generate-icons.mjs` renders the launcher icons from the master and `favicon-32` from the favicon. Manifest `theme_color` `#2C4AAE`, `background_color` `#F5F2EA`; `viewport.themeColor` per theme.
+- **Tokens and dark mode:** colours are CSS variables in `app/globals.css` that flip under `prefers-color-scheme: dark`; Tailwind maps semantic names (`paper`, `card`, `ink`, `primary`, `success`, `error`, …) onto them, so one class works in both themes. Dark mode re-enabled (`color-scheme: light dark`). Every text pair checked at AA, both themes.
+- **Type:** Literata 600/700 via `next/font` (self-hosted, `latin-ext`) for the answer words, wordmark and word chips; Inter for the UI. Both fonts now reach Tailwind through CSS variables (the old `font-sans: 'Inter'` named a family `next/font` never registers).
+- **Layout and states:** phone header with score pill and "Új játék"; redesigned game card (answer states with icon + text label, feedback panel, lookup links), switch-style auto-advance toggle with running and "Megállítva" states, collapsible "Gyakorolandó szavak" (open by default) and "Hogyan működik?", "Eredmény" with a Top-3 that marks the running session ("ez a kör"), desktop keyboard reference and `kbd` hints, loading skeleton, error screen with a reload button, restyled dialogs, visible `:focus-visible` ring.
+- **Motion:** `prefers-reduced-motion` neutralises the fade/slide animations and skips the confetti.
+- **Deviations from the artboards (measured, not taste):** the two-column page starts at 1280 px rather than wrapping fluidly (narrower, the side-by-side answer buttons overflow on the widest words at desktop size); phone word sizes scale down below 390 px (overflow at 320 px); the dark switch "off" track is `#6B7486` instead of `#5B6475` (3:1 non-text contrast).
+- Verified locally on `next start`: lint, typecheck, 28 Jest + 7 Python tests, build; light/dark × phone/desktop screenshots against the artboards; no answer-word overflow for the widest pairs of each size step from 320 to 1440 px; v1 migration, rounds, dialogs, focus cases, SW + offline reload, mastery confetti (and none under reduced motion), no CSP errors.
+

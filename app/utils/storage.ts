@@ -88,6 +88,24 @@ export function topScores(scores: number[]): number[] {
     .slice(0, MAX_HIGH_SCORES);
 }
 
+export interface RankedScore {
+  score: number;
+  /** True for the session in progress ("ez a kör" in the UI). */
+  isCurrent: boolean;
+}
+
+/**
+ * The Top-3 list as displayed: finished sessions plus the running one, with the
+ * running one marked. On a tie the finished score ranks first, so the running
+ * session only shows as a new entry once it has actually beaten it.
+ */
+export function rankScores(saved: number[], current: number): RankedScore[] {
+  return [...saved.map((score) => ({ score, isCurrent: false })), { score: current, isCurrent: true }]
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score) // Array.sort is stable: ties keep saved-before-current
+    .slice(0, MAX_HIGH_SCORES);
+}
+
 // ---- Browser side -------------------------------------------------------
 
 function read(key: string): string | null {
