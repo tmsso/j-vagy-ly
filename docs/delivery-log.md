@@ -44,3 +44,7 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 - Verified locally against the production build: SW activates, 1 page + 10 assets + 4 data entries cached, and an offline reload is playable on the first visit.
 - Design handover written: `docs/design/BRIEF.md` (icon/identity, dark theme, game-card states, constraints).
 - Merged as #3 (`be7b7d1`). Production check the same day: manifest and `sw.js` served (`no-cache`), SW activated, offline reload playable on first visit, no CSP errors. Accept (a) met; (b) the phone install is the owner's.
+
+## 2026-11-04 — Follow-up fix (#4)
+
+- A regression from #2, found in final review: after a mouse click left focus on a control, digit and arrow shortcuts were ignored, and after confirming "Új játék" a later Enter re-opened the dialog. Now only Space/Enter defer to a focused, enabled control, and focus is released after a dialog *confirm*. A click on the dialog's own padding no longer counts as a backdrop click.
