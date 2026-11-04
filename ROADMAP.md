@@ -15,7 +15,7 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 | Phase | Name | Code | Accept line | Gap to Accept |
 | --- | --- | --- | --- | --- |
 | 0 | MVP game on Vercel | delivered | ✅ met | live at `j-or-ly.vercel.app` since 2026-05 |
-| 1 | Hardening | not started | — | everything |
+| 1 | Hardening | delivered (PR pending merge) | ⏳ prod | header + round check on production after merge |
 | 2 | PWA-ready | not started | — | everything, plus a phone install check |
 | 3 | Design pass | not started | — | brief to be written in Phase 2 (`docs/design/BRIEF.md`) |
 
@@ -41,6 +41,14 @@ Work list = review §5. Done means:
 5. **Logic fixes.** Review L1–L11, S5, S6: per-session high scores, immutable state updates, failed words keyed by pair with a v1→v2 storage migration, a load-failure error state, forced light theme, keyboard handling that leaves focused controls alone, Escape-closable accessible dialogs, encoded links, corrected tip and shortcut copy, a single viewport meta tag, no dead code.
 6. **Generator.** Readable swap rules, the 15-character limit applied to both words, minified JSON. **The set of pairs is unchanged** (asserted in the PR).
 7. **Repo hygiene.** MIT `LICENSE` (D1), `j-vagy-ly` naming (D4), legacy files and branches gone (D3).
+
+Batch notes (2026-11-04):
+
+- `npm audit --omit=dev`: 0. Full tree: 0 high/critical, with ~35 **moderate dev-only** advisories left in the ESLint (minimatch) and Jest 29 trees. They clear with the Jest 30 major (IDEAS). The vulnerable `brace-expansion@1` was pinned to `^1.1.21` via `overrides` in `package.json`.
+- Generator tests use stdlib `unittest`, not pytest (no extra install in CI). They also assert the committed JSON is current. Played set verified identical (16,285 pairs); file 1.56 MB → 798 KB.
+- High scores: one entry per finished session. The running session's score is persisted and folded in at the next "Új játék" *or* the next visit, so nothing depends on unload events. Equal scores from different sessions may now both appear. From v1 storage, only the best score migrates (the rest were intermediate values from bug L1).
+- Found during the batch: there was **no visible "Új játék" button** (`ScorePanel` ignored its `onNewGame` prop), so touch users could not restart. Added.
+- Dialogs use the native `<dialog>` element (focus containment and Escape for free).
 
 **Accept:** on production, `curl -I` shows the security headers. A full round (answer right, answer wrong, next, new game) runs with no console errors. The top-3 list shows one entry per finished session. CI is green on `main`.
 

@@ -6,12 +6,12 @@ A small web game for practising one of Hungarian spelling's classic traps: each 
 
 ## Features
 
-- 16,682 generated word pairs, of which those up to 15 characters are played
+- 16,285 generated word pairs (words up to 15 characters)
 - A failed-word backlog: missed words reappear every 4th question after a short cool-down, turn green after 2 correct answers in a row, and are mastered (with confetti) after 4 correct
 - Pairs where both spellings are real words ("Mindkettő helyes!")
 - Score, accuracy and a top-3 list, stored locally in the browser
 - Optional auto-advance after a correct answer (configurable, cancellable)
-- Keyboard shortcuts: `1`/`2` or `←`/`→` to choose, `Enter`/`Space` for the next word, `N` for a new game
+- Keyboard shortcuts: `1`/`2` or `←`/`→` to choose, `Enter`/`Space` for the next word, `N` (or the "Új játék" button) for a new game, `Esc` to close a dialog
 - Hungarian UI, responsive, no account and no tracking
 
 ## Tech stack
@@ -28,6 +28,8 @@ cd j-vagy-ly
 npm install
 npm run dev          # http://localhost:3000
 ```
+
+`npm run verify` runs everything CI runs: lint, typecheck, Jest, the Python generator tests and the build.
 
 `npm run build` regenerates `public/jly-pairs.json` from `data/magyar-szavak.txt` first (the `prebuild` step), then builds.
 
@@ -56,6 +58,6 @@ Vercel's Git integration builds every push. `main` goes to production, and other
 
 ## Licence
 
-See `LICENSE`.
+MIT (see `LICENSE`).
 
 The word list comes from a public Hungarian word-list gist (see `data/README.md`).

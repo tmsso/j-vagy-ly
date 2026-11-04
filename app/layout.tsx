@@ -1,12 +1,22 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+// next/font downloads the font at build time and serves it from this origin,
+// so no request goes to Google at runtime (and the CSP can stay 'self').
+const inter = Inter({ subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
   title: "J vagy LY?",
   description: "Gyakorold a magyar helyesírást! Válaszd ki a helyes írásmódot a j és ly közül.",
+};
+
+// Exporting viewport lets Next emit the single <meta name="viewport"> itself.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // Light only until the design pass delivers a real dark theme (ROADMAP Phase 3).
+  colorScheme: "light",
 };
 
 export default function RootLayout({
@@ -16,11 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hu">
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </head>
-      <body className={`${inter.className} bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen`}>
+      <body className={`${inter.className} bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen text-gray-900`}>
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           {children}
         </main>

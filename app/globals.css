@@ -2,23 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Light theme only for now. The cards are hard-coded white, so the previous
+ * prefers-color-scheme: dark override turned body text near-white on white.
+ * A real dark theme is part of the design pass (ROADMAP Phase 3).
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', system-ui, sans-serif;
-}
 
 @layer utilities {
   .text-balance {

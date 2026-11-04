@@ -4,39 +4,52 @@ export interface JLyPair {
   bothCorrect?: boolean;
 }
 
-let cachedPairs: JLyPair[] | null = null;
+/** Longest word the buttons are designed for (see the font-size steps in GameCard). */
+export const MAX_WORD_LENGTH = 15;
 
-export async function loadPairs(): Promise<JLyPair[]> {
-  if (cachedPairs) {
-    return cachedPairs;
-  }
-  
-  try {
-    const response = await fetch('/jly-pairs.json');
-    if (!response.ok) {
-      throw new Error(`Failed to load pairs: ${response.status}`);
-    }
-    const data: JLyPair[] = await response.json();
-    
-    // Filter out words longer than 15 characters
-    const filteredData = data.filter(pair => 
-      pair.correct.length <= 15 && pair.wrong.length <= 15
-    );
-
-    cachedPairs = filteredData;
-    return filteredData;
-  } catch (error) {
-    console.error('Error loading j/ly pairs:', error);
-    // Fallback to empty array
-    return [];
-  }
+/**
+ * Stable identity of a pair. The same correct word can have several wrong
+ * variants (e.g. a j in two positions), so the correct word alone is not unique.
+ */
+export function pairKey(pair: Pick<JLyPair, 'correct' | 'wrong'>): string {
+  return `${pair.correct}|${pair.wrong}`;
 }
 
-export function getRandomPair(pairs: JLyPair[]): JLyPair {
-  if (pairs.length === 0) {
-    return { correct: 'folyó', wrong: 'fojó' };
+function isPair(value: unknown): value is JLyPair {
+  if (!value || typeof value !== 'object') return false;
+  const v = value as Record<string, unknown>;
+  return typeof v.correct === 'string' && typeof v.wrong === 'string' && v.correct !== v.wrong;
+}
+
+/** Keeps well-formed pairs that fit the buttons. Exported for tests. */
+export function sanitizePairs(data: unknown): JLyPair[] {
+  if (!Array.isArray(data)) return [];
+  return data
+    .filter(isPair)
+    .filter((pair) => pair.correct.length <= MAX_WORD_LENGTH && pair.wrong.length <= MAX_WORD_LENGTH)
+    .map((pair) => ({ correct: pair.correct, wrong: pair.wrong, ...(pair.bothCorrect ? { bothCorrect: true } : {}) }));
+}
+
+let cachedPairs: JLyPair[] | null = null;
+
+/**
+ * Loads the generated pairs. Throws on failure (network, bad JSON, empty set)
+ * so the page can show an error message. An empty pool would otherwise crash
+ * the game later on with a much less helpful error.
+ */
+export async function loadPairs(): Promise<JLyPair[]> {
+  if (cachedPairs) return cachedPairs;
+
+  const response = await fetch('/jly-pairs.json');
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
   }
-  return pairs[Math.floor(Math.random() * pairs.length)];
+  const pairs = sanitizePairs(await response.json());
+  if (pairs.length === 0) {
+    throw new Error('üres szólista');
+  }
+  cachedPairs = pairs;
+  return pairs;
 }
 
 export function shuffleArray<T>(array: T[]): T[] {
