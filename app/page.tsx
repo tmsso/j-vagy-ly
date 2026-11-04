@@ -1,118 +1,92 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import confetti from 'canvas-confetti';
 import GameCard from './components/GameCard';
 import ScorePanel from './components/ScorePanel';
 import Instructions from './components/Instructions';
-import { JLyPair, loadPairs } from './utils/pairs';
-import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, manualRemove, FailedWordStat } from './utils/gameLogic';
+import ConfirmDialog from './components/ConfirmDialog';
+import { loadPairs } from './utils/pairs';
+import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, manualRemove, isAnswerCorrect } from './utils/gameLogic';
+import { loadProgress, saveCurrentSession, saveFailedWords, saveHighScores, topScores } from './utils/storage';
 import { AUTO_ADVANCE_DELAY_MS, AUTO_ADVANCE_DELAY_SECONDS } from './constants';
-import confetti from 'canvas-confetti';
+
+/** True when a key press should go to a focused control rather than to the game shortcuts. */
+function isInteractiveTarget(target: EventTarget | null): boolean {
+  return target instanceof HTMLElement && Boolean(target.closest('button, a, input, select, textarea, [contenteditable="true"]'));
+}
 
 export default function Home() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [highScores, setHighScores] = useState<number[]>([]);
+  // Scores of finished sessions. The running session is merged in for display only.
+  const [savedHighScores, setSavedHighScores] = useState<number[]>([]);
   const [showFailedWordsHistory, setShowFailedWordsHistory] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [wordToRemove, setWordToRemove] = useState<string | null>(null);
+  const [keyToRemove, setKeyToRemove] = useState<string | null>(null);
   const [isAutoAdvanceEnabled, setIsAutoAdvanceEnabled] = useState(AUTO_ADVANCE_DELAY_SECONDS > 0);
   const [isCountdownStopped, setIsCountdownStopped] = useState(false);
   const [countdownRemainingMs, setCountdownRemainingMs] = useState<number | null>(null);
 
   useEffect(() => {
-    const getStoredJson = <T,>(key: string, fallback: T): T => {
-      try {
-        const storedValue = localStorage.getItem(key);
-        return storedValue ? JSON.parse(storedValue) as T : fallback;
-      } catch {
-        // A previous app version or a manually edited value should not block the game.
-        return fallback;
-      }
-    };
-
-    const storedScores = getStoredJson<unknown>('j_ly_high_scores', []);
-    const savedScores = Array.isArray(storedScores)
-      ? storedScores.filter((score): score is number => typeof score === 'number')
-      : [];
-    setHighScores(savedScores);
-
-    const storedFailedWords = getStoredJson<unknown>(
-      'j_ly_failed_words',
-      undefined
-    );
-    const savedFailedWords = storedFailedWords && typeof storedFailedWords === 'object' && !Array.isArray(storedFailedWords)
-      ? storedFailedWords as Record<string, FailedWordStat>
-      : undefined;
-
     loadPairs()
       .then((pairs) => {
-        setGameState(initializeGameState(pairs, savedFailedWords));
-        setIsLoading(false);
+        const progress = loadProgress(pairs);
+        setSavedHighScores(progress.highScores);
+        setGameState(initializeGameState(pairs, progress.failedWords));
       })
-      .catch((err) => {
-        setError(err.message);
-        setIsLoading(false);
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : String(err));
       });
   }, []);
 
   useEffect(() => {
-    if (gameState?.failedWords) {
-      localStorage.setItem('j_ly_failed_words', JSON.stringify(gameState.failedWords));
-    }
-    if (gameState?.justMastered) {
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#22c55e', '#3b82f6', '#f59e0b']
-      });
-    }
-  }, [gameState?.failedWords, gameState?.justMastered]);
+    if (gameState) saveFailedWords(gameState.failedWords);
+  }, [gameState?.failedWords]); // eslint-disable-line react-hooks/exhaustive-deps -- only when the record changes
 
   useEffect(() => {
-    if (gameState && (gameState.totalAnswers > 0 || Object.keys(gameState.failedWords).length > 0)) {
-       const currentScore = gameState.correctAnswers;
-       setHighScores(prev => {
-         const newScores = [...prev, currentScore].sort((a, b) => b - a);
-         const uniqueScores = Array.from(new Set(newScores)).slice(0, 3);
-         if (JSON.stringify(uniqueScores) !== JSON.stringify(prev)) {
-           localStorage.setItem('j_ly_high_scores', JSON.stringify(uniqueScores));
-           return uniqueScores;
-         }
-         return prev;
-       });
+    if (gameState) saveCurrentSession(gameState.correctAnswers);
+  }, [gameState?.correctAnswers]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (gameState?.justMastered) {
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#3b82f6', '#f59e0b'] });
     }
-  }, [gameState?.correctAnswers, gameState?.totalAnswers]);
+  }, [gameState?.justMastered]);
 
   const handleAnswerSelect = useCallback((answer: string) => {
-    if (!gameState || gameState.isAnswered) return;
     setIsCountdownStopped(false);
-    setGameState(selectAnswer(gameState, answer));
-  }, [gameState]);
+    setGameState((state) => (state ? selectAnswer(state, answer) : state));
+  }, []);
 
   const handleNextQuestion = useCallback(() => {
+    // Functional update + the isAnswered guard make a double trigger (click and key) harmless.
+    setGameState((state) => (state && state.isAnswered ? nextQuestion(state) : state));
+  }, []);
+
+  const handleNewGame = () => {
     if (!gameState) return;
-    setCountdownRemainingMs(null);
-    setGameState(nextQuestion(gameState));
-  }, [gameState]);
+    const scores = topScores([...savedHighScores, gameState.correctAnswers]);
+    setSavedHighScores(scores);
+    saveHighScores(scores);
+    saveCurrentSession(0);
+    setGameState(resetGame(gameState));
+    setShowConfirmModal(false);
+  };
 
   const hasCorrectAnswer = Boolean(
-    gameState?.isAnswered &&
-    (gameState.currentPair.bothCorrect || gameState.selectedAnswer === gameState.currentPair.correct)
+    gameState?.isAnswered && gameState.selectedAnswer !== null && isAnswerCorrect(gameState.currentPair, gameState.selectedAnswer)
   );
   const canAutoAdvance = AUTO_ADVANCE_DELAY_SECONDS > 0 && isAutoAdvanceEnabled;
 
+  const isCountdownActive = hasCorrectAnswer && canAutoAdvance && !isCountdownStopped;
+
   useEffect(() => {
-    if (!hasCorrectAnswer || !canAutoAdvance || isCountdownStopped) {
-      setCountdownRemainingMs(null);
-      return;
-    }
+    if (!isCountdownActive) return;
 
+    // State is only set from the interval callback (not synchronously in the
+    // effect body); until the first tick the render falls back to the full delay.
     const finishAt = Date.now() + AUTO_ADVANCE_DELAY_MS;
-    setCountdownRemainingMs(AUTO_ADVANCE_DELAY_MS);
-
     const intervalId = window.setInterval(() => {
       const remaining = Math.max(0, finishAt - Date.now());
       setCountdownRemainingMs(remaining);
@@ -123,11 +97,14 @@ export default function Home() {
       }
     }, 50);
 
-    return () => window.clearInterval(intervalId);
-  }, [canAutoAdvance, handleNextQuestion, hasCorrectAnswer, isCountdownStopped]);
+    return () => {
+      window.clearInterval(intervalId);
+      setCountdownRemainingMs(null);
+    };
+  }, [isCountdownActive, handleNextQuestion]);
 
   useEffect(() => {
-    if (!hasCorrectAnswer || !canAutoAdvance || isCountdownStopped) return;
+    if (!isCountdownActive) return;
 
     const stopCountdown = () => setIsCountdownStopped(true);
     // Capture phase ensures links and buttons stop the timer before their own action runs.
@@ -138,48 +115,35 @@ export default function Home() {
       document.removeEventListener('pointerdown', stopCountdown, true);
       document.removeEventListener('keydown', stopCountdown, true);
     };
-  }, [canAutoAdvance, hasCorrectAnswer, isCountdownStopped]);
-
-  const handleManualRemoveConfirm = () => {
-    if (wordToRemove && gameState) {
-      setGameState(manualRemove(gameState, wordToRemove));
-      setWordToRemove(null);
-    }
-  };
+  }, [isCountdownActive]);
 
   const handleAutoAdvanceChange = (enabled: boolean) => {
     setIsAutoAdvanceEnabled(enabled);
     if (!enabled) setIsCountdownStopped(true);
   };
 
+  const isDialogOpen = showConfirmModal || keyToRemove !== null;
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Suppress space scrolling
-      if (event.key === ' ' || event.key === 'Spacebar') {
-          event.preventDefault();
-      }
-
-      if (!gameState || showConfirmModal || wordToRemove) return;
+      if (!gameState || isDialogOpen || event.altKey || event.ctrlKey || event.metaKey) return;
+      const onControl = isInteractiveTarget(event.target);
 
       switch (event.key) {
         case '1':
         case 'ArrowLeft':
-          if (!gameState.isAnswered && gameState.shuffledOptions[0]) {
-            handleAnswerSelect(gameState.shuffledOptions[0]);
-          }
+          if (!onControl && !gameState.isAnswered && gameState.shuffledOptions[0]) handleAnswerSelect(gameState.shuffledOptions[0]);
           break;
         case '2':
         case 'ArrowRight':
-          if (!gameState.isAnswered && gameState.shuffledOptions[1]) {
-            handleAnswerSelect(gameState.shuffledOptions[1]);
-          }
+          if (!onControl && !gameState.isAnswered && gameState.shuffledOptions[1]) handleAnswerSelect(gameState.shuffledOptions[1]);
           break;
         case ' ':
-        case 'Spacebar':
         case 'Enter':
-          if (gameState.isAnswered) {
-            handleNextQuestion();
-          }
+          // On a focused button/link/checkbox, Space and Enter keep their native meaning.
+          if (onControl) break;
+          event.preventDefault(); // Stop Space from scrolling the page
+          if (gameState.isAnswered) handleNextQuestion();
           break;
         case 'n':
         case 'N':
@@ -190,20 +154,27 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState, handleAnswerSelect, handleNextQuestion, showConfirmModal, wordToRemove]);
+  }, [gameState, handleAnswerSelect, handleNextQuestion, isDialogOpen]);
 
   if (error) {
-    return <div className="text-center mt-20 text-error-600">A játék betöltése nem sikerült: {error}</div>;
+    return (
+      <div role="alert" className="text-center mt-20 text-error-600">
+        <p className="font-bold">A játék betöltése nem sikerült.</p>
+        <p className="text-sm mt-2">Ellenőrizd az internetkapcsolatot, majd töltsd újra az oldalt. ({error})</p>
+      </div>
+    );
   }
 
-  if (isLoading || !gameState) return <div className="text-center mt-20">Betöltés...</div>;
+  if (!gameState) return <div className="text-center mt-20">Betöltés...</div>;
 
-  const failedWordsList = Object.values(gameState.failedWords);
-  const wordToRemoveData = wordToRemove ? gameState.failedWords[wordToRemove] : null;
-  const countdownProgress = countdownRemainingMs === null
+  const highScores = topScores([...savedHighScores, gameState.correctAnswers]);
+  const failedWordsList = Object.entries(gameState.failedWords);
+  const statToRemove = keyToRemove ? gameState.failedWords[keyToRemove] : null;
+  const remainingMs = isCountdownActive ? (countdownRemainingMs ?? AUTO_ADVANCE_DELAY_MS) : null;
+  const countdownProgress = remainingMs === null
     ? 0
-    : Math.max(0, Math.min(100, (countdownRemainingMs / AUTO_ADVANCE_DELAY_MS) * 100));
-  const countdownSeconds = countdownRemainingMs === null ? 0 : Math.ceil(countdownRemainingMs / 1000);
+    : Math.max(0, Math.min(100, (remainingMs / AUTO_ADVANCE_DELAY_MS) * 100));
+  const countdownSeconds = remainingMs === null ? 0 : Math.ceil(remainingMs / 1000);
 
   return (
     <>
@@ -217,19 +188,19 @@ export default function Home() {
             pair={gameState.currentPair}
             selectedAnswer={gameState.selectedAnswer}
             isAnswered={gameState.isAnswered}
-            correctAnswer={gameState.currentPair.correct}
             onSelect={handleAnswerSelect}
             shuffledOptions={gameState.shuffledOptions}
           />
-          
+
           <div className="flex flex-col items-center mt-4 gap-3">
             <button
+              type="button"
               onClick={handleNextQuestion}
               disabled={!gameState.isAnswered}
               className={`relative overflow-hidden px-8 py-4 rounded-xl text-lg font-bold transition-all ${gameState.isAnswered ? 'btn-primary' : 'btn-secondary opacity-50 cursor-not-allowed'}`}
             >
               <span className="relative z-10">Következő szó (Enter)</span>
-              {countdownRemainingMs !== null && (
+              {remainingMs !== null && (
                 <span
                   aria-hidden="true"
                   className="absolute bottom-0 left-0 h-1 bg-white/80 transition-[width] duration-75 ease-linear"
@@ -237,7 +208,7 @@ export default function Home() {
                 />
               )}
             </button>
-            {countdownRemainingMs !== null && (
+            {remainingMs !== null && (
               <p className="text-sm text-gray-600" aria-live="polite">
                 Következő szó {countdownSeconds} mp múlva
               </p>
@@ -256,16 +227,23 @@ export default function Home() {
           </div>
 
           <div className="mt-8">
-            <button onClick={() => setShowFailedWordsHistory(!showFailedWordsHistory)} className="text-sm text-primary-600 underline">
+            <button
+              type="button"
+              onClick={() => setShowFailedWordsHistory(!showFailedWordsHistory)}
+              aria-expanded={showFailedWordsHistory}
+              className="text-sm text-primary-600 underline"
+            >
               {showFailedWordsHistory ? 'Elrejtés' : 'Korábban elhibázott szavak listája'}
             </button>
-            
+
             {showFailedWordsHistory && (
               <div className="mt-4 p-4 bg-gray-50 rounded-lg border flex flex-wrap gap-2">
-                {failedWordsList.map(stat => (
-                  <button 
-                    key={stat.pair.correct}
-                    onClick={() => setWordToRemove(stat.pair.correct)}
+                {failedWordsList.length === 0 && <p className="text-sm text-gray-500 italic">Nincs elhibázott szó.</p>}
+                {failedWordsList.map(([key, stat]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setKeyToRemove(key)}
                     className={`px-2 py-1 text-sm rounded border transition-colors ${stat.stage === 'green' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-700 border-red-100'}`}
                   >
                     {stat.pair.correct} {stat.stage === 'green' ? '✓' : ''}
@@ -275,7 +253,7 @@ export default function Home() {
             )}
           </div>
         </div>
-        
+
         <div className="lg:col-span-1">
           <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
             <h3 className="text-xl font-bold mb-4 text-gray-800">Top 3 Legjobb Pontszám</h3>
@@ -297,35 +275,34 @@ export default function Home() {
         </div>
       </div>
 
-      {wordToRemove && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in duration-300">
-            <h3 className="text-xl font-bold mb-4">
-              <span className={wordToRemoveData?.stage === 'green' ? 'text-green-600' : 'text-red-500'}>
-                {wordToRemove}
-              </span> szó eltávolítása
-            </h3>
-            <p className="text-gray-600 mb-6 font-medium">Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
-            <div className="flex gap-4">
-              <button onClick={() => setWordToRemove(null)} className="flex-1 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-bold">Mégse</button>
-              <button onClick={handleManualRemoveConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-bold">Eltávolítás</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={keyToRemove !== null}
+        title={
+          <>
+            <span className={statToRemove?.stage === 'green' ? 'text-green-600' : 'text-red-500'}>{statToRemove?.pair.correct}</span> szó eltávolítása
+          </>
+        }
+        confirmLabel="Eltávolítás"
+        confirmClassName="bg-red-500 text-white hover:bg-red-600"
+        onCancel={() => setKeyToRemove(null)}
+        onConfirm={() => {
+          if (keyToRemove) setGameState(manualRemove(gameState, keyToRemove));
+          setKeyToRemove(null);
+        }}
+      >
+        <p className="font-medium">Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
+      </ConfirmDialog>
 
-      {showConfirmModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full">
-            <h3 className="text-xl font-bold mb-4">Új játék?</h3>
-            <p className="text-gray-600 mb-6">A jelenlegi pontszám elveszik. Kezdhetjük?</p>
-            <div className="flex gap-4">
-              <button onClick={() => setShowConfirmModal(false)} className="flex-1 py-2 bg-gray-100 rounded-lg">Mégse</button>
-              <button onClick={() => { setGameState(resetGame(gameState)); setShowConfirmModal(false); }} className="flex-1 py-2 bg-primary-600 text-white rounded-lg">Új játék</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={showConfirmModal}
+        title="Új játék?"
+        confirmLabel="Új játék"
+        confirmClassName="bg-primary-600 text-white hover:bg-primary-700"
+        onCancel={() => setShowConfirmModal(false)}
+        onConfirm={handleNewGame}
+      >
+        <p>A jelenlegi kör véget ér, a pontszámod bekerül a toplistába. Kezdhetjük?</p>
+      </ConfirmDialog>
     </>
   );
 }

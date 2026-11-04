@@ -46,6 +46,12 @@ export default function ScorePanel({ correct, total, onNewGame, pairCount }: Sco
           </div>
         </div>
       </div>
+
+      {/* The only way to start over on touch devices (keyboard users also have N). */}
+      <button type="button" onClick={onNewGame} className="btn-secondary w-full mt-6 !text-lg !py-3">
+        Új játék (N)
+      </button>
+      <p className="text-xs text-gray-500 text-center mt-3">{pairCount.toLocaleString('hu-HU')} szópár</p>
     </div>
   );
 }

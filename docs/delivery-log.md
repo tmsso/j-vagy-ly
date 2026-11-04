@@ -24,3 +24,14 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 - The repo had been renamed on GitHub to `tmsso/j-vagy-ly` in the meantime.
 - Full status, security and logic review: `docs/review-2026-11-04.md`.
 - New doc structure: `CLAUDE.md`, `ROADMAP.md` (Phases 1–3 with Accept lines, decisions D1–D4), `IDEAS.md`, this log, and a refreshed `README.md`. The old plan documents moved verbatim into `docs/`.
+
+## 2026-11-04 — Phase 1 hardening
+
+- Dependencies: Next 16.4.5, React 19.3.1. `npm audit --omit=dev` is clean. `next-transpile-modules` removed.
+- Build: typechecks again (no `ignoreBuildErrors`), no `standalone` output, `turbopack.root` pinned.
+- Security headers (CSP, nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy) via `next.config.ts`, verified in headless Chromium, including the mastery confetti (which needs `worker-src blob:`).
+- Logic: per-session high scores, immutable state updates, failed words keyed by pair with a v1→v2 storage migration, validated storage, a load-error message, forced light theme, keyboard handling that leaves focused controls alone, native `<dialog>` confirmations, encoded links, and a visible "Új játék" button.
+- Content: replaced the false "magas/mély hangrend" tip with accurate guidance, and fixed the shortcut list.
+- Generator rewritten readably and minified. Played pair set unchanged.
+- Quality gates: ESLint flat config, 26 Jest tests, 7 unittest tests, `npm run verify`, GitHub Actions CI.
+- Repo: MIT licence (D1), renamed to `j-vagy-ly` (D4), and the Streamlit/Dash leftovers deleted (D3).

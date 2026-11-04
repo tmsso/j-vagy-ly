@@ -1,21 +1,25 @@
-'use client';
+// Pure game rules: no window, no storage, no React. Everything here is unit-tested
+// (tests/gameLogic.test.ts); persistence lives in ./storage.ts.
 
-import { JLyPair, shuffleArray } from './pairs';
+import { JLyPair, pairKey, shuffleArray } from './pairs';
 
-export const BACKLOG_INTERVAL = 4; // Backlog word every 4th question
-export const REAPPEAR_THRESHOLD = 5; // Minimal cooling threshold
-export const GREEN_THRESHOLD = 2; // Correct guesses in a row to turn green
-export const MASTERY_THRESHOLD = 4; // Total correct guesses in session to remove
+export const BACKLOG_INTERVAL = 4; // Every 4th question may come from the failed-word backlog
+export const REAPPEAR_THRESHOLD = 5; // A failed word waits at least this many answers before returning
+export const GREEN_THRESHOLD = 2; // Correct answers in a row to turn a failed word green
+export const MASTERY_THRESHOLD = 4; // Correct answers (since the last miss) to remove it from the backlog
 
-export type FailedWordStage = 'backlog' | 'green' | 'mastered';
+export type FailedWordStage = 'backlog' | 'green';
 
 export interface FailedWordStat {
   pair: JLyPair;
   stage: FailedWordStage;
-  gameIndexFailedAt: number; // For cooling
+  gameIndexFailedAt: number; // Answer count when last seen, for the cool-down
   consecutiveCorrect: number; // For turning green
   sessionCorrect: number; // For mastery removal
 }
+
+/** Failed words keyed by pairKey(pair). */
+export type FailedWords = Record<string, FailedWordStat>;
 
 export interface GameState {
   pairs: JLyPair[];
@@ -26,25 +30,29 @@ export interface GameState {
   isAnswered: boolean;
   selectedAnswer: string | null;
   pairCount: number;
-  failedWords: Record<string, FailedWordStat>;
+  failedWords: FailedWords;
   isCurrentFromBacklog: boolean;
-  justMastered: string | null; // For flare animation trigger
+  justMastered: string | null; // Triggers the confetti
 }
 
-export function initializeGameState(pairs: JLyPair[], savedFailedWords?: Record<string, FailedWordStat>): GameState {
-  const initialPair = pairs[Math.floor(Math.random() * pairs.length)];
-  
-  const validFailedWords: Record<string, FailedWordStat> = {};
-  if (savedFailedWords) {
-    for (const key in savedFailedWords) {
-      // Upon new game/session, treat all pre-existing as backlog (but keep stats)
-      validFailedWords[key] = {
-        ...savedFailedWords[key],
-        stage: 'backlog',
-        gameIndexFailedAt: 0, // Ready to appear
-        consecutiveCorrect: 0
-      };
-    }
+function randomItem<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+export function isAnswerCorrect(pair: JLyPair, answer: string): boolean {
+  return Boolean(pair.bothCorrect) || answer === pair.correct;
+}
+
+export function initializeGameState(pairs: JLyPair[], savedFailedWords: FailedWords = {}): GameState {
+  if (pairs.length === 0) {
+    throw new Error('Nincs betölthető szópár.');
+  }
+  const initialPair = randomItem(pairs);
+
+  // A new session treats every saved word as fresh backlog (stats kept, ready to appear).
+  const failedWords: FailedWords = {};
+  for (const [key, stat] of Object.entries(savedFailedWords)) {
+    failedWords[key] = { ...stat, stage: 'backlog', gameIndexFailedAt: 0, consecutiveCorrect: 0 };
   }
 
   return {
@@ -56,42 +64,45 @@ export function initializeGameState(pairs: JLyPair[], savedFailedWords?: Record<
     isAnswered: false,
     selectedAnswer: null,
     pairCount: pairs.length,
-    failedWords: validFailedWords,
+    failedWords,
     isCurrentFromBacklog: false,
-    justMastered: null
+    justMastered: null,
   };
 }
 
 export function selectAnswer(state: GameState, answer: string): GameState {
   if (state.isAnswered) return state;
-  
-  const isCorrect = state.currentPair.bothCorrect || answer === state.currentPair.correct;
-  const wordKey = state.currentPair.correct;
-  const updatedFailedWords = { ...state.failedWords };
+
+  const isCorrect = isAnswerCorrect(state.currentPair, answer);
+  const key = pairKey(state.currentPair);
+  // Copy the record *and* the touched entry: the previous state must stay untouched,
+  // otherwise React (and StrictMode's double invocation) sees stale, double-counted stats.
+  const failedWords: FailedWords = { ...state.failedWords };
   let justMastered: string | null = null;
 
-  if (isCorrect) {
-    if (updatedFailedWords[wordKey]) {
-      const stat = updatedFailedWords[wordKey];
-      stat.consecutiveCorrect += 1;
-      stat.sessionCorrect += 1;
-      stat.gameIndexFailedAt = state.totalAnswers;
-
-      if (stat.sessionCorrect >= MASTERY_THRESHOLD) {
-        delete updatedFailedWords[wordKey];
-        justMastered = wordKey;
-      } else if (stat.consecutiveCorrect >= GREEN_THRESHOLD) {
-        stat.stage = 'green';
-      }
+  const existing = failedWords[key];
+  if (isCorrect && existing) {
+    const updated: FailedWordStat = {
+      ...existing,
+      consecutiveCorrect: existing.consecutiveCorrect + 1,
+      sessionCorrect: existing.sessionCorrect + 1,
+      gameIndexFailedAt: state.totalAnswers,
+    };
+    if (updated.sessionCorrect >= MASTERY_THRESHOLD) {
+      delete failedWords[key];
+      justMastered = state.currentPair.correct;
+    } else {
+      if (updated.consecutiveCorrect >= GREEN_THRESHOLD) updated.stage = 'green';
+      failedWords[key] = updated;
     }
-  } else {
-    // FAILED: No mercy. Back to backlog, reset counters.
-    updatedFailedWords[wordKey] = {
+  } else if (!isCorrect) {
+    // A miss resets everything: back to the backlog.
+    failedWords[key] = {
       pair: state.currentPair,
       stage: 'backlog',
       gameIndexFailedAt: state.totalAnswers,
       consecutiveCorrect: 0,
-      sessionCorrect: 0
+      sessionCorrect: 0,
     };
   }
 
@@ -101,41 +112,44 @@ export function selectAnswer(state: GameState, answer: string): GameState {
     totalAnswers: state.totalAnswers + 1,
     isAnswered: true,
     selectedAnswer: answer,
-    failedWords: updatedFailedWords,
-    justMastered
+    failedWords,
+    justMastered,
   };
 }
 
 export function nextQuestion(state: GameState): GameState {
   let newPair: JLyPair | null = null;
   let isFromBacklog = false;
-  const currentTotal = state.totalAnswers;
+  const currentKey = pairKey(state.currentPair);
+  const answered = state.totalAnswers;
 
-  // 1-in-4 Logic
-  if ((currentTotal + 1) % BACKLOG_INTERVAL === 0) {
-    const activeStats = Object.values(state.failedWords).filter(s => 
-      currentTotal - s.gameIndexFailedAt >= REAPPEAR_THRESHOLD &&
-      s.pair.correct !== state.currentPair.correct
+  if ((answered + 1) % BACKLOG_INTERVAL === 0) {
+    const ready = Object.entries(state.failedWords).filter(
+      ([key, stat]) => key !== currentKey && answered - stat.gameIndexFailedAt >= REAPPEAR_THRESHOLD
     );
-
-    if (activeStats.length > 0) {
-      // Weighted selection: "green" words are 50% less likely
-      const weightedList: FailedWordStat[] = [];
-      activeStats.forEach(s => {
-        const weight = s.stage === 'green' ? 50 : 100;
-        for(let i=0; i<weight; i++) weightedList.push(s);
-      });
-      newPair = weightedList[Math.floor(Math.random() * weightedList.length)].pair;
+    if (ready.length > 0) {
+      // Weighted pick: green words come back half as often as backlog ones.
+      const totalWeight = ready.reduce((sum, [, s]) => sum + (s.stage === 'green' ? 1 : 2), 0);
+      let roll = Math.random() * totalWeight;
+      for (const [, stat] of ready) {
+        roll -= stat.stage === 'green' ? 1 : 2;
+        if (roll < 0) {
+          newPair = stat.pair;
+          break;
+        }
+      }
+      newPair ??= ready[ready.length - 1][1].pair;
       isFromBacklog = true;
     }
   }
 
   if (!newPair) {
-    const randomPool = state.pairs.filter(p => 
-      p.correct !== state.currentPair.correct && 
-      (!state.failedWords[p.correct] || state.failedWords[p.correct].stage === 'mastered')
-    );
-    newPair = randomPool.length > 0 ? randomPool[Math.floor(Math.random() * randomPool.length)] : state.pairs[Math.floor(Math.random() * state.pairs.length)];
+    // Failed words only come back through the backlog slot above.
+    const pool = state.pairs.filter((p) => {
+      const key = pairKey(p);
+      return key !== currentKey && !state.failedWords[key];
+    });
+    newPair = randomItem(pool.length > 0 ? pool : state.pairs);
   }
 
   return {
@@ -145,14 +159,14 @@ export function nextQuestion(state: GameState): GameState {
     isAnswered: false,
     selectedAnswer: null,
     isCurrentFromBacklog: isFromBacklog,
-    justMastered: null
+    justMastered: null,
   };
 }
 
-export function manualRemove(state: GameState, word: string): GameState {
-  const updated = { ...state.failedWords };
-  delete updated[word];
-  return { ...state, failedWords: updated };
+export function manualRemove(state: GameState, key: string): GameState {
+  const failedWords = { ...state.failedWords };
+  delete failedWords[key];
+  return { ...state, failedWords };
 }
 
 export function resetGame(state: GameState): GameState {
