@@ -56,9 +56,9 @@ Record of what shipped, when, and why. Append dated entries at the bottom; `ROAD
 
 ## 2026-11-04 — Design handoff 01 committed
 
-- Design pass 01 exported from the Claude Design canvas into `docs/design/handoff-01/`: icon master and favicon SVGs, the canvas index and all 13 artboard sources, plus a README with the token, type and manifest decisions. Implemented in the same PR (next entry).
+- Design pass 01 exported from the Claude Design canvas into `docs/design/handoff-01/`: icon master and favicon SVGs, the canvas index and all 13 artboard sources, plus a README with the token, type and manifest decisions. Implemented in the same PR, #6 (next entry).
 
-## 2026-11-04 — Design pass 01 implemented (Phase 3)
+## 2026-11-04 — Design pass 01 implemented (Phase 3, #6)
 
 - **Identity:** new icon master and favicon (`design/icon.svg`, `design/favicon.svg`); `scripts/generate-icons.mjs` renders the launcher icons from the master and `favicon-32` from the favicon. Manifest `theme_color` `#2C4AAE`, `background_color` `#F5F2EA`; `viewport.themeColor` per theme.
 - **Tokens and dark mode:** colours are CSS variables in `app/globals.css` that flip under `prefers-color-scheme: dark`; Tailwind maps semantic names (`paper`, `card`, `ink`, `primary`, `success`, `error`, …) onto them, so one class works in both themes. Dark mode re-enabled (`color-scheme: light dark`). Every text pair checked at AA, both themes.

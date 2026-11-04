@@ -17,7 +17,7 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 | 0 | MVP game on Vercel | delivered | ✅ met | live at `j-vagy-ly.tmsso.com` (and `j-or-ly.vercel.app`) |
 | 1 | Hardening | delivered (#2) | ✅ met | — (headers, full round, mastery confetti verified on production) |
 | 2 | PWA-ready | delivered (#3) | ⏳ device | (a) ✅ production offline check met 2026-11-04; (b) owner phone install |
-| 3 | Design pass | delivered (design-01 PR) | ⏳ owner | owner signs off on the look on a phone (light and dark) |
+| 3 | Design pass | delivered (#6) | ⏳ owner | owner signs off on the look on a phone (light and dark) |
 
 ## Decisions — decided 2026-11-04 (owner, upfront for the hardening batch)
 
@@ -77,7 +77,7 @@ Input: `docs/design/BRIEF.md` (written in Phase 2). Expected outputs: an app ico
 
 **Accept:** the placeholder icons have been replaced, dark mode is re-enabled and legible, and the owner signs off on the look on a phone.
 
-Batch notes (2026-11-04): handoff in `docs/design/handoff-01/`, implemented in the same PR; details and the three measured deviations from the artboards in `docs/delivery-log.md`. Icons and dark mode: done and verified. Open: owner sign-off on a phone.
+Batch notes (2026-11-04): handoff in `docs/design/handoff-01/`, implemented in the same PR (#6); details and the three measured deviations from the artboards in `docs/delivery-log.md`. Icons and dark mode: done and verified. Open: owner sign-off on a phone.
 
 ## Execution order from here
 
