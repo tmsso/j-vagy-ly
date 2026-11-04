@@ -17,7 +17,7 @@ Companions: `CLAUDE.md` (rules and conventions — read first), `docs/review-202
 | 0 | MVP game on Vercel | delivered | ✅ met | live at `j-vagy-ly.tmsso.com` (and `j-or-ly.vercel.app`) |
 | 1 | Hardening | delivered (#2) | ✅ met | — (headers, full round, mastery confetti verified on production) |
 | 2 | PWA-ready | delivered (#3) | ⏳ device | (a) ✅ production offline check met 2026-11-04; (b) owner phone install |
-| 3 | Design pass | brief ready | — | owner runs the pass from `docs/design/BRIEF.md` |
+| 3 | Design pass | delivered (#6) | ⏳ owner | owner signs off on the look on a phone (light and dark) |
 
 ## Decisions — decided 2026-11-04 (owner, upfront for the hardening batch)
 
@@ -66,7 +66,7 @@ Batch notes (2026-11-04):
 
 - Hand-written `public/sw.js` (~130 lines, commented). The install step also parses the cached page for its `/_next/static/` URLs, and the page posts the chunks it loaded. Together these make the very first visit sufficient for offline play, verified headless without a second online load.
 - The static cache is capped at 80 entries, since hashed chunks from old deploys would otherwise pile up.
-- Icons are placeholders from `design/icon.svg` via `scripts/generate-icons.mjs` (uses the `sharp` that Next already installs).
+- Icons are generated from `design/icon.svg` via `scripts/generate-icons.mjs` (uses the `sharp` that Next already installs); placeholders until Phase 3 replaced them.
 - Vercel previews sit behind deployment protection, so the pre-merge check ran against a local `next start` of the identical build. The production check runs after merge (D2).
 
 **Accept:** (a) on the production URL, a headless Chromium check finds the manifest valid, the SW active, and an offline reload playable. (b) **Owner device check:** install to the home screen on a real phone, open it in aeroplane mode, and play a round.
@@ -77,10 +77,12 @@ Input: `docs/design/BRIEF.md` (written in Phase 2). Expected outputs: an app ico
 
 **Accept:** the placeholder icons have been replaced, dark mode is re-enabled and legible, and the owner signs off on the look on a phone.
 
+Batch notes (2026-11-04): handoff in `docs/design/handoff-01/`, implemented in the same PR (#6); details and the three measured deviations from the artboards in `docs/delivery-log.md`. Icons and dark mode: done and verified. Open: owner sign-off on a phone.
+
 ## Execution order from here
 
 1. **Owner device check** (Phase 2 b, ~5 min): open **`j-vagy-ly.tmsso.com`** on a phone (installs and progress are per-address; install from the address you'll keep), add it to the home screen (Android Chrome: install prompt or menu → "Install app"; iOS Safari: Share → "Add to Home Screen"), switch on aeroplane mode, open it from the icon, and play a round.
-2. **Design pass** (Phase 3) from `docs/design/BRIEF.md`, then an implementation batch.
+2. **Design sign-off** (Phase 3): look at it on the phone in light and dark mode; feedback becomes a small follow-up batch.
 3. Opportunistic: `IDEAS.md` content-quality items (word-initial `ly` giveaways, dictionary curation).
 
 ## Owner steps (no code)

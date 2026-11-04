@@ -64,19 +64,20 @@ export default function ConfirmDialog({
       }}
       // p-0 + inner padded wrapper: only a click on the backdrop itself targets the
       // <dialog> element; padding on the dialog would count as "backdrop" too.
-      className="rounded-2xl p-0 max-w-sm w-[calc(100%-2rem)] shadow-2xl bg-white text-gray-800 backdrop:bg-black/50"
+      // The backdrop colour is set in globals.css (dialog::backdrop).
+      className="w-[calc(100%-2rem)] max-w-[332px] rounded-[22px] bg-card p-0 text-ink shadow-[0_20px_50px_rgba(0,0,0,0.25)]"
     >
-      <div className="p-6">
-        <h3 id={titleId} className="text-xl font-bold mb-4">
+      <div className="flex flex-col gap-3 p-6">
+        <h3 id={titleId} className="text-xl font-bold">
           {title}
         </h3>
-        <div className="text-gray-600 mb-6">{children}</div>
-        <div className="flex gap-4">
+        <div className="text-[15px] leading-[1.45] text-ink-muted">{children}</div>
+        <div className="grid grid-cols-2 gap-3 pt-2">
           <button
             ref={cancelRef}
             type="button"
             onClick={onCancel}
-            className="flex-1 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-bold"
+            className="min-h-12 rounded-[14px] bg-subtle text-base font-bold text-ink transition-colors hover:bg-line"
           >
             Mégse
           </button>
@@ -86,7 +87,8 @@ export default function ConfirmDialog({
               confirmedRef.current = true;
               onConfirm();
             }}
-            className={`flex-1 py-3 rounded-xl transition-colors font-bold ${confirmClassName}`}>
+            className={`min-h-12 rounded-[14px] text-base font-bold transition-opacity hover:opacity-90 ${confirmClassName}`}
+          >
             {confirmLabel}
           </button>
         </div>

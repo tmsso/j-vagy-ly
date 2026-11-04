@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Literata } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "./components/ServiceWorkerRegister";
 
-// next/font downloads the font at build time and serves it from this origin,
-// so no request goes to Google at runtime (and the CSP can stay 'self').
-const inter = Inter({ subsets: ["latin", "latin-ext"] });
+// next/font downloads the fonts at build time and serves them from this origin,
+// so no request goes to Google at runtime (the CSP stays 'self' and offline works).
+// `variable` exposes each font as a CSS variable that tailwind.config.ts uses.
+const inter = Inter({ subsets: ["latin", "latin-ext"], variable: "--font-inter" });
+// Literata (a reading serif) for the answer words, wordmark and word list.
+const literata = Literata({
+  subsets: ["latin", "latin-ext"],
+  weight: ["600", "700"],
+  variable: "--font-literata",
+});
 
 export const metadata: Metadata = {
   title: "J vagy LY?",
   description: "Gyakorold a magyar helyesírást! Válaszd ki a helyes írásmódot a j és ly közül.",
   applicationName: "J vagy LY?",
-  // Placeholder icons until the design pass (docs/design/BRIEF.md).
   icons: {
     icon: [
       { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
@@ -27,9 +33,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  // Light only until the design pass delivers a real dark theme (ROADMAP Phase 3).
-  colorScheme: "light",
-  themeColor: "#0284c7",
+  colorScheme: "light dark",
+  // Browser chrome matches the page ground in each theme.
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5F2EA" },
+    { media: "(prefers-color-scheme: dark)", color: "#11151D" },
+  ],
 };
 
 export default function RootLayout({
@@ -38,13 +47,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="hu">
-      <body className={`${inter.className} bg-gradient-to-br from-blue-50 to-cyan-50 min-h-screen text-gray-900`}>
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          {children}
-        </main>
+    <html lang="hu" className={`${inter.variable} ${literata.variable}`}>
+      <body className="flex min-h-screen flex-col bg-paper font-sans text-ink antialiased">
+        {children}
         <ServiceWorkerRegister />
-        <footer className="text-center text-gray-600 text-sm py-4">
+        <footer className="mt-auto px-4 pb-8 pt-6 text-center text-[13px] text-ink-muted">
           <p>J vagy LY? © 2026</p>
         </footer>
       </body>

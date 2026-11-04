@@ -6,9 +6,12 @@ import GameCard from './components/GameCard';
 import ScorePanel from './components/ScorePanel';
 import Instructions from './components/Instructions';
 import ConfirmDialog from './components/ConfirmDialog';
+import FailedWords from './components/FailedWords';
+import Shortcuts from './components/Shortcuts';
+import Icon from './components/Icon';
 import { loadPairs } from './utils/pairs';
 import { GameState, initializeGameState, selectAnswer, nextQuestion, resetGame, manualRemove, isAnswerCorrect } from './utils/gameLogic';
-import { loadProgress, saveCurrentSession, saveFailedWords, saveHighScores, topScores } from './utils/storage';
+import { loadProgress, rankScores, saveCurrentSession, saveFailedWords, saveHighScores, topScores } from './utils/storage';
 import { AUTO_ADVANCE_DELAY_MS, AUTO_ADVANCE_DELAY_SECONDS } from './constants';
 
 /**
@@ -28,7 +31,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   // Scores of finished sessions. The running session is merged in for display only.
   const [savedHighScores, setSavedHighScores] = useState<number[]>([]);
-  const [showFailedWordsHistory, setShowFailedWordsHistory] = useState(false);
+  const [showFailedWords, setShowFailedWords] = useState(true);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [keyToRemove, setKeyToRemove] = useState<string | null>(null);
   const [isAutoAdvanceEnabled, setIsAutoAdvanceEnabled] = useState(AUTO_ADVANCE_DELAY_SECONDS > 0);
@@ -57,7 +60,8 @@ export default function Home() {
 
   useEffect(() => {
     if (gameState?.justMastered) {
-      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#22c55e', '#3b82f6', '#f59e0b'] });
+      // disableForReducedMotion: skipped entirely when the OS asks for less motion.
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#1E8A63', '#2C4AAE', '#F2B33D'], disableForReducedMotion: true });
     }
   }, [gameState?.justMastered]);
 
@@ -163,151 +167,233 @@ export default function Home() {
 
   if (error) {
     return (
-      <div role="alert" className="text-center mt-20 text-error-600">
-        <p className="font-bold">A játék betöltése nem sikerült.</p>
-        <p className="text-sm mt-2">Ellenőrizd az internetkapcsolatot, majd töltsd újra az oldalt. ({error})</p>
-      </div>
+      <>
+        <Header />
+        <div role="alert" className="mx-auto flex max-w-md flex-col items-center gap-3 px-6 py-16 text-center">
+          <span aria-hidden="true" className="flex h-14 w-14 items-center justify-center rounded-full bg-error-50 text-error-700">
+            <Icon name="offline" size={28} />
+          </span>
+          <h2 className="text-lg font-bold text-ink">A játék betöltése nem sikerült.</h2>
+          <p className="text-[15px] leading-[1.45] text-ink-muted">Ellenőrizd az internetkapcsolatot, majd töltsd újra az oldalt.</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="min-h-12 rounded-[14px] bg-primary-600 px-6 text-base font-bold text-white hover:bg-primary-600/90"
+          >
+            Újratöltés
+          </button>
+          <p className="font-mono text-xs text-ink-muted">({error})</p>
+        </div>
+      </>
     );
   }
 
-  if (!gameState) return <div className="text-center mt-20">Betöltés...</div>;
+  if (!gameState) {
+    return (
+      <>
+        <Header />
+        <div aria-busy="true" className="mx-auto flex w-full max-w-xl flex-col gap-3 px-4 py-5">
+          <div className="h-[22px] w-36 self-center rounded-md bg-subtle" />
+          <div className="h-24 rounded-[18px] bg-subtle" />
+          <div className="h-24 rounded-[18px] bg-subtle" />
+          <p className="mt-2 text-center text-[15px] text-ink-muted">Betöltés…</p>
+        </div>
+      </>
+    );
+  }
 
-  const highScores = topScores([...savedHighScores, gameState.correctAnswers]);
-  const failedWordsList = Object.entries(gameState.failedWords);
+  const ranked = rankScores(savedHighScores, gameState.correctAnswers);
   const statToRemove = keyToRemove ? gameState.failedWords[keyToRemove] : null;
   const remainingMs = isCountdownActive ? (countdownRemainingMs ?? AUTO_ADVANCE_DELAY_MS) : null;
   const countdownProgress = remainingMs === null
     ? 0
     : Math.max(0, Math.min(100, (remainingMs / AUTO_ADVANCE_DELAY_MS) * 100));
   const countdownSeconds = remainingMs === null ? 0 : Math.ceil(remainingMs / 1000);
+  // "Stopped" only means something if a countdown was about to run.
+  const showStopped = hasCorrectAnswer && canAutoAdvance && isCountdownStopped;
 
   return (
     <>
-      <header className="text-center mb-10 relative">
-        <h1 className="text-5xl font-bold text-gray-800 mb-4 mt-8">J vagy <span className="text-primary-600">LY</span>?</h1>
-      </header>
+      <Header
+        correct={gameState.correctAnswers}
+        total={gameState.totalAnswers}
+        onNewGame={() => setShowConfirmModal(true)}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <GameCard
-            pair={gameState.currentPair}
-            selectedAnswer={gameState.selectedAnswer}
-            isAnswered={gameState.isAnswered}
-            onSelect={handleAnswerSelect}
-            shuffledOptions={gameState.shuffledOptions}
-          />
+      {/*
+        Layout: up to `xl` everything is one column (game, next, word list,
+        results, help). From `xl` (1280 px) it splits into a game column and a
+        side column; any narrower and the side-by-side answer buttons get too
+        tight for the widest words at desktop size. The two wrapper divs are
+        `display: contents` until then, so their children join one flex column
+        and `order-*` can interleave them; from `xl` the wrappers become real
+        columns and the order resets.
+      */}
+      <main className="mx-auto flex w-full max-w-[1180px] flex-col gap-4 p-4 lg:gap-5 lg:px-8 lg:pb-10 lg:pt-4 xl:flex-row xl:items-start xl:gap-7">
+        <div className="contents xl:flex xl:min-w-0 xl:flex-1 xl:flex-col xl:gap-5">
+          <div className="order-1 xl:order-none">
+            <GameCard
+              pair={gameState.currentPair}
+              selectedAnswer={gameState.selectedAnswer}
+              isAnswered={gameState.isAnswered}
+              onSelect={handleAnswerSelect}
+              shuffledOptions={gameState.shuffledOptions}
+            />
+          </div>
 
-          <div className="flex flex-col items-center mt-4 gap-3">
+          <div className="order-2 flex flex-col gap-2.5 xl:order-none lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-5 lg:gap-y-3">
             <button
               type="button"
               onClick={handleNextQuestion}
               disabled={!gameState.isAnswered}
-              className={`relative overflow-hidden px-8 py-4 rounded-xl text-lg font-bold transition-all ${gameState.isAnswered ? 'btn-primary' : 'btn-secondary opacity-50 cursor-not-allowed'}`}
+              aria-keyshortcuts="Enter"
+              className={`relative inline-flex min-h-14 items-center justify-center gap-3 overflow-hidden rounded-2xl px-5 text-lg font-bold lg:min-w-[280px] ${
+                gameState.isAnswered ? 'bg-primary-600 text-white hover:bg-primary-600/90' : 'cursor-not-allowed bg-subtle text-ink-muted'
+              }`}
             >
-              <span className="relative z-10">Következő szó (Enter)</span>
+              Következő szó
+              <kbd aria-hidden="true" className="hidden h-[26px] items-center rounded-[7px] bg-white/20 px-2 font-sans text-[13px] font-semibold lg:inline-flex">
+                Enter
+              </kbd>
               {remainingMs !== null && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-0 left-0 h-1 bg-white/80 transition-[width] duration-75 ease-linear"
+                  className="absolute bottom-0 left-0 h-[5px] bg-white/75 transition-[width] duration-75 ease-linear"
                   style={{ width: `${countdownProgress}%` }}
                 />
               )}
             </button>
             {remainingMs !== null && (
-              <p className="text-sm text-gray-600" aria-live="polite">
-                Következő szó {countdownSeconds} mp múlva
+              <p className="text-center text-sm text-ink-muted lg:text-left lg:text-[15px]" aria-live="polite">
+                Továbblépés <strong className="font-bold tabular-nums text-ink">{countdownSeconds} mp</strong> múlva
+                {/* "Tap anywhere" on touch screens, "any key or click" with a mouse. */}
+                <span className="[@media(hover:hover)]:hidden"> · koppints bárhova a megállításhoz</span>
+                <span className="hidden [@media(hover:hover)]:inline"> · bármely gomb vagy kattintás megállítja</span>
+              </p>
+            )}
+            {showStopped && (
+              <p className="text-center text-sm text-ink-muted lg:text-left lg:text-[15px]" aria-live="polite">
+                Megállítva. Lépj tovább, amikor készen állsz.
               </p>
             )}
             {AUTO_ADVANCE_DELAY_SECONDS > 0 && (
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={isAutoAdvanceEnabled}
-                  onChange={(event) => handleAutoAdvanceChange(event.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                />
+              <label className="flex min-h-11 cursor-pointer select-none items-center gap-3 px-1 text-[15px] text-ink-muted lg:basis-full lg:px-0">
+                {/* A styled checkbox drawn as a switch: the input itself is the track, the span is the knob. */}
+                <span className="relative inline-flex flex-none">
+                  <input
+                    type="checkbox"
+                    checked={isAutoAdvanceEnabled}
+                    onChange={(event) => handleAutoAdvanceChange(event.target.checked)}
+                    className="peer h-[26px] w-11 cursor-pointer appearance-none rounded-[13px] bg-switch-off transition-colors checked:bg-primary-600"
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-[3px] top-[3px] h-5 w-5 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.25)] transition-transform peer-checked:translate-x-[18px]"
+                  />
+                </span>
                 Automatikus továbblépés helyes válasz után
               </label>
             )}
           </div>
 
-          <div className="mt-8">
-            <button
-              type="button"
-              onClick={() => setShowFailedWordsHistory(!showFailedWordsHistory)}
-              aria-expanded={showFailedWordsHistory}
-              className="text-sm text-primary-600 underline"
-            >
-              {showFailedWordsHistory ? 'Elrejtés' : 'Korábban elhibázott szavak listája'}
-            </button>
-
-            {showFailedWordsHistory && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg border flex flex-wrap gap-2">
-                {failedWordsList.length === 0 && <p className="text-sm text-gray-500 italic">Nincs elhibázott szó.</p>}
-                {failedWordsList.map(([key, stat]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setKeyToRemove(key)}
-                    className={`px-2 py-1 text-sm rounded border transition-colors ${stat.stage === 'green' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-50 text-red-700 border-red-100'}`}
-                  >
-                    {stat.pair.correct} {stat.stage === 'green' ? '✓' : ''}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <Shortcuts className="order-6 hidden lg:flex xl:order-none" />
         </div>
 
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Top 3 Legjobb Pontszám</h3>
-            {highScores.length > 0 ? (
-              <ol className="space-y-2">
-                {highScores.map((score, idx) => (
-                  <li key={idx} className="flex justify-between items-center text-lg">
-                    <span className="text-gray-500 font-medium">{idx + 1}.</span>
-                    <span className="font-bold text-primary-600">{score} pont</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="text-gray-500 italic">Még nincs rögzített pontszám.</p>
-            )}
+        <div className="contents xl:flex xl:w-80 xl:flex-none xl:flex-col xl:gap-5">
+          <div className="order-4 xl:order-none">
+            <ScorePanel correct={gameState.correctAnswers} total={gameState.totalAnswers} ranked={ranked} pairCount={gameState.pairCount} />
           </div>
-          <ScorePanel correct={gameState.correctAnswers} total={gameState.totalAnswers} onNewGame={() => setShowConfirmModal(true)} pairCount={gameState.pairCount} />
-          <Instructions />
+          <div className="order-3 xl:order-none">
+            <FailedWords
+              failedWords={gameState.failedWords}
+              open={showFailedWords}
+              onToggle={() => setShowFailedWords(!showFailedWords)}
+              onRemove={setKeyToRemove}
+            />
+          </div>
+          <div className="order-5 xl:order-none">
+            <Instructions />
+          </div>
         </div>
-      </div>
+      </main>
 
       <ConfirmDialog
         open={keyToRemove !== null}
         title={
           <>
-            <span className={statToRemove?.stage === 'green' ? 'text-green-600' : 'text-red-500'}>{statToRemove?.pair.correct}</span> szó eltávolítása
+            „<span className="font-serif">{statToRemove?.pair.correct}</span>” eltávolítása
           </>
         }
         confirmLabel="Eltávolítás"
-        confirmClassName="bg-red-500 text-white hover:bg-red-600"
+        confirmClassName="bg-error-600 text-on-feedback"
         onCancel={() => setKeyToRemove(null)}
         onConfirm={() => {
           if (keyToRemove) setGameState(manualRemove(gameState, keyToRemove));
           setKeyToRemove(null);
         }}
       >
-        <p className="font-medium">Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
+        <p>Biztosan jól megtanultad ezt a szót? Eltávolítható a listáról?</p>
       </ConfirmDialog>
 
       <ConfirmDialog
         open={showConfirmModal}
         title="Új játék?"
         confirmLabel="Új játék"
-        confirmClassName="bg-primary-600 text-white hover:bg-primary-700"
+        confirmClassName="bg-primary-600 text-white"
         onCancel={() => setShowConfirmModal(false)}
         onConfirm={handleNewGame}
       >
         <p>A jelenlegi kör véget ér, a pontszámod bekerül a toplistába. Kezdhetjük?</p>
       </ConfirmDialog>
     </>
+  );
+}
+
+interface HeaderProps {
+  correct?: number;
+  total?: number;
+  /** Absent while loading or on the error screen. */
+  onNewGame?: () => void;
+}
+
+/** Wordmark, plus (once the game runs) the phone score pill and the "Új játék" button. */
+function Header({ correct = 0, total = 0, onNewGame }: HeaderProps) {
+  return (
+    <header className="border-b border-line lg:border-b-0">
+      <div className="mx-auto flex min-h-16 w-full max-w-[1180px] items-center justify-between gap-3 px-4 py-2.5 lg:px-8 lg:pb-3 lg:pt-7">
+        <h1 className="font-serif text-2xl font-bold tracking-[-0.01em] text-ink lg:text-[36px] lg:tracking-[-0.015em]">
+          J vagy <span className="text-primary-text">LY</span>?
+        </h1>
+        {onNewGame && (
+          <div className="flex items-center gap-2">
+            {/* Single-column layouts only: there the results card sits far below the game. */}
+            <p className="flex items-baseline gap-1 rounded-full border border-line bg-card px-3 py-[7px] text-base font-bold tabular-nums text-ink xl:hidden">
+              <span aria-hidden="true">
+                {correct} <span className="font-medium text-ink-muted">/ {total}</span>
+              </span>
+              <span className="sr-only">
+                {correct} helyes válasz {total} kérdésből
+              </span>
+            </p>
+            {/* The only way to start over on touch devices (keyboard users also have N). */}
+            <button
+              type="button"
+              onClick={onNewGame}
+              aria-keyshortcuts="N"
+              className="flex min-h-11 items-center gap-1.5 rounded-xl border border-line bg-card px-3.5 text-[15px] font-semibold text-ink hover:border-ink-muted/40 lg:gap-2.5 lg:pl-4 lg:pr-2"
+            >
+              <Icon name="restart" />
+              Új játék
+              <kbd
+                aria-hidden="true"
+                className="hidden h-[26px] min-w-[26px] items-center justify-center rounded-[7px] border border-line bg-subtle px-1.5 font-sans text-[13px] font-semibold text-ink-muted lg:inline-flex"
+              >
+                N
+              </kbd>
+            </button>
+          </div>
+        )}
+      </div>
+    </header>
   );
 }
