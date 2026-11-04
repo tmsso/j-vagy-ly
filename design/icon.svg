@@ -1,0 +1,9 @@
+<!-- PLACEHOLDER app icon until the design pass (ROADMAP Phase 3, docs/design/BRIEF.md).
+     Full-bleed square so the same source works as a maskable icon; the lettering
+     stays inside the central 60% safe zone. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#0284c7"/>
+  <text x="256" y="290" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif"
+        font-weight="700" font-size="150" fill="#ffffff">j<tspan fill="#bae6fd">/</tspan>ly</text>
+  <rect x="146" y="362" width="220" height="14" rx="7" fill="#bae6fd"/>
+</svg>
